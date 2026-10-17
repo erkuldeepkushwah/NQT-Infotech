@@ -1,6 +1,6 @@
-<svg width="160" height="40" viewBox="0 0 160 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect width="40" height="40" rx="10" fill="#2543E0"/>
-  <path d="M11 27V13h3.2l6.3 9.2V13H24v14h-3.2l-6.3-9.2V27H11z" fill="white"/>
-  <circle cx="29" cy="24" r="3.2" fill="#22D3EE"/>
-  <text x="50" y="27" font-family="Inter, Arial, sans-serif" font-size="16" font-weight="700" fill="#0F172A">NQT Infotech</text>
+<svg width="200" height="48" viewBox="0 0 200 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M40 24c0 8.84-7.16 16-16 16S8 32.84 8 24 15.16 8 24 8c4 0 7.65 1.47 10.44 3.88" stroke="#0B4FE0" stroke-width="6" stroke-linecap="round"/>
+  <path d="M24 15c4.97 0 9 4.03 9 9s-4.03 9-9 9" stroke="#5C82FF" stroke-width="6" stroke-linecap="round"/>
+  <text x="56" y="31" font-family="Inter, Arial, sans-serif" font-size="19" font-weight="800" fill="#0A1740">NQT</text>
+  <text x="104" y="31" font-family="Inter, Arial, sans-serif" font-size="19" font-weight="500" fill="#0B4FE0">Infotech</text>
 </svg>

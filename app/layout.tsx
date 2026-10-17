@@ -6,7 +6,7 @@ import { site } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: {
-    default: site.name + " | IT Services & Software Solutions",
+    default: site.name + " | " + site.tagline,
     template: "%s | " + site.name,
   },
   description: site.description,
@@ -16,7 +16,8 @@ export const metadata: Metadata = {
     "software development",
     "web development",
     "cloud solutions",
-    "India",
+    "IT training",
+    "Indore",
   ],
   openGraph: {
     title: site.name,
@@ -33,6 +34,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="font-sans">
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        />
         <Navbar />
         <main>{children}</main>
         <Footer />

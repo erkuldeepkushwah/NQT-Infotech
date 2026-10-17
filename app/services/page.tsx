@@ -1,6 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Icon from "@/components/Icon";
+import PageHero from "@/components/PageHero";
 import ServiceCard from "@/components/ServiceCard";
+import CTABand from "@/components/CTABand";
+import SectionHeading from "@/components/SectionHeading";
+import { img } from "@/lib/images";
 import { process, services, techStack } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -12,53 +17,52 @@ export const metadata: Metadata = {
 export default function ServicesPage() {
   return (
     <>
-      <section className="border-b border-slate-100 bg-gradient-to-b from-brand-50 to-white">
-        <div className="container-x py-16 sm:py-20">
-          <span className="eyebrow">Services</span>
-          <h1 className="mt-3 max-w-3xl text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">
-            Technology services built around your goals
-          </h1>
-          <p className="mt-5 max-w-2xl text-lg text-slate-600">
-            Pick a single service or let us handle the whole product lifecycle.
-            Every engagement is scoped clearly and delivered on schedule.
-          </p>
-        </div>
-      </section>
+      <PageHero title="Our IT services" />
 
-      <section className="section bg-white">
+      <section className="section">
         <div className="container-x grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {services.map((service) => (
-            <ServiceCard key={service.title} service={service} />
+            <ServiceCard key={service.slug} service={service} />
           ))}
         </div>
       </section>
 
       <section className="section bg-slate-50">
-        <div className="container-x grid gap-12 lg:grid-cols-2 lg:items-center">
+        <div className="container-x">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <img src={img("svc-g1", 640, 420)} alt="Project work" className="h-56 w-full rounded-xl object-cover" />
+            <img src={img("svc-g2", 640, 420)} alt="Design review" className="h-56 w-full rounded-xl object-cover" />
+            <img src={img("svc-g3", 640, 420)} alt="Development" className="h-56 w-full rounded-xl object-cover" />
+            <img src={img("svc-g4", 640, 420)} alt="Team standup" className="h-56 w-full rounded-xl object-cover" />
+            <img src={img("svc-g5", 640, 420)} alt="Client workshop" className="h-56 w-full rounded-xl object-cover" />
+            <img src={img("svc-g6", 640, 420)} alt="Deployment" className="h-56 w-full rounded-xl object-cover" />
+          </div>
+        </div>
+      </section>
+
+      <section className="section">
+        <div className="container-x grid items-start gap-12 lg:grid-cols-2">
           <div>
-            <span className="eyebrow">Our toolkit</span>
-            <h2 className="mt-3 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
-              Modern, proven technologies
+            <span className="eyebrow">How we work</span>
+            <h2 className="mt-3 text-3xl font-bold tracking-tight text-navy-800 sm:text-4xl">
+              Trusted, client-focused approach
             </h2>
             <p className="mt-4 text-slate-600">
-              We choose stable, well-supported tools so your product stays
-              maintainable and easy to hire for.
+              We work closely with our clients to understand their technology
+              goals and challenges. By combining experience, clear analysis and
+              practical advice, we help businesses make confident decisions and
+              achieve long-term, measurable results.
             </p>
             <div className="mt-8 flex flex-wrap gap-2">
               {techStack.map((tech) => (
-                <span
-                  key={tech}
-                  className="rounded-full border border-slate-200 bg-white px-3.5 py-1.5 text-sm font-medium text-slate-700"
-                >
+                <span key={tech} className="rounded-full border border-slate-200 bg-white px-3.5 py-1.5 text-sm font-medium text-slate-700">
                   {tech}
                 </span>
               ))}
             </div>
           </div>
-          <div className="rounded-3xl border border-slate-100 bg-white p-8 shadow-soft">
-            <h3 className="text-lg font-semibold text-slate-900">
-              Engagement models
-            </h3>
+          <div className="card p-8">
+            <h3 className="text-lg font-semibold text-navy-800">Engagement models</h3>
             <ul className="mt-5 space-y-4">
               {[
                 { title: "Fixed scope", text: "Defined deliverables and a fixed price." },
@@ -66,11 +70,9 @@ export default function ServicesPage() {
                 { title: "Dedicated team", text: "A squad that works as an extension of yours." },
               ].map((item) => (
                 <li key={item.title} className="flex gap-3">
-                  <span className="mt-1.5 h-2 w-2 flex-none rounded-full bg-accent-500" />
+                  <Icon name="check" className="mt-0.5 h-4 w-4 flex-none text-brand-600" />
                   <div>
-                    <div className="text-sm font-semibold text-slate-900">
-                      {item.title}
-                    </div>
+                    <div className="text-sm font-semibold text-navy-800">{item.title}</div>
                     <div className="text-sm text-slate-600">{item.text}</div>
                   </div>
                 </li>
@@ -83,28 +85,41 @@ export default function ServicesPage() {
         </div>
       </section>
 
-      <section className="section bg-white">
+      <section className="section bg-slate-50">
         <div className="container-x">
-          <div className="max-w-2xl">
-            <span className="eyebrow">Process</span>
-            <h2 className="mt-3 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
-              How every project runs
-            </h2>
-          </div>
-          <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {process.map((step) => (
-              <div key={step.step} className="rounded-2xl border border-slate-100 bg-slate-50/60 p-6">
-                <div className="text-sm font-bold text-brand-600">{step.step}</div>
-                <h3 className="mt-3 text-lg font-semibold text-slate-900">
-                  {step.title}
-                </h3>
-                <p className="mt-2 text-sm leading-relaxed text-slate-600">
-                  {step.description}
-                </p>
+          <SectionHeading
+            eyebrow="Our consulting process"
+            title="A clear, structured approach to technology projects"
+            align="center"
+          />
+          <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {process.map((step, index) => (
+              <div key={step.title} className="card p-7">
+                <div className="text-sm font-bold text-brand-600">{index + 1}.</div>
+                <h3 className="mt-3 text-lg font-semibold text-navy-800">{step.title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-slate-600">{step.description}</p>
               </div>
             ))}
+            <div className="relative isolate overflow-hidden rounded-xl banner-bg p-7">
+              <h3 className="text-lg font-semibold text-white">Ready to get started?</h3>
+              <p className="mt-2 text-sm text-brand-100">
+                Schedule a consultation with our IT experts to discuss your goals.
+              </p>
+              <Link href="/contact" className="btn mt-6 bg-white text-brand-700 hover:bg-brand-50">
+                Book a call
+              </Link>
+            </div>
           </div>
         </div>
+      </section>
+
+      <section className="pt-20">
+        <CTABand
+          title="Ready to build something great?"
+          text="Tell us about your project and we will get back to you with a plan and an estimate within one working day."
+          primary={{ href: "/contact", label: "Contact us" }}
+          secondary={{ href: "/courses", label: "See our courses" }}
+        />
       </section>
     </>
   );

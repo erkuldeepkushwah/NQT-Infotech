@@ -19,15 +19,19 @@ body {
 
 @layer components {
   .container-x {
-    @apply mx-auto w-full max-w-6xl px-5 sm:px-8;
+    @apply mx-auto w-full max-w-screen2xl px-5 sm:px-8;
   }
 
   .btn {
-    @apply inline-flex items-center justify-center gap-2 rounded-lg px-5 py-3 text-sm font-semibold transition;
+    @apply inline-flex items-center justify-center gap-2 rounded-md px-5 py-3 text-sm font-semibold transition;
   }
 
   .btn-primary {
-    @apply btn bg-brand-600 text-white hover:bg-brand-700 shadow-soft;
+    @apply btn bg-brand-600 text-white hover:bg-brand-700;
+  }
+
+  .btn-outline {
+    @apply btn border border-white/50 text-white hover:bg-white/10;
   }
 
   .btn-ghost {
@@ -39,16 +43,24 @@ body {
   }
 
   .eyebrow {
-    @apply text-xs font-semibold uppercase tracking-widest text-brand-600;
+    @apply text-xs font-semibold uppercase tracking-[0.2em] text-brand-600;
   }
 
   .card {
-    @apply rounded-2xl border border-slate-100 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-soft;
+    @apply rounded-xl border border-slate-100 bg-white shadow-card;
+  }
+
+  .field {
+    @apply mt-1.5 w-full rounded-md border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-800 outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-100;
+  }
+
+  .field-label {
+    @apply text-sm font-medium text-slate-700;
   }
 }
 
 @layer utilities {
-  .gradient-text {
-    @apply bg-gradient-to-r from-brand-600 via-brand-500 to-accent-500 bg-clip-text text-transparent;
+  .banner-bg {
+    background-image: linear-gradient(105deg, #040A1F 0%, #0A1740 42%, #0B4FE0 100%);
   }
 }

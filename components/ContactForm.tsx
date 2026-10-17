@@ -12,17 +12,13 @@ export default function ContactForm() {
 
   if (sent) {
     return (
-      <div className="rounded-2xl border border-brand-100 bg-brand-50 p-8 text-center">
-        <h3 className="text-lg font-semibold text-brand-900">Thank you!</h3>
-        <p className="mt-2 text-sm text-brand-800">
+      <div className="rounded-xl border border-brand-100 bg-brand-50 p-8 text-center">
+        <h3 className="text-lg font-semibold text-navy-800">Thank you!</h3>
+        <p className="mt-2 text-sm text-slate-600">
           Your enquiry has been noted. Our team will get back to you within one
           working day.
         </p>
-        <button
-          type="button"
-          onClick={() => setSent(false)}
-          className="btn-ghost mt-5"
-        >
+        <button type="button" onClick={() => setSent(false)} className="btn-ghost mt-5">
           Send another message
         </button>
       </div>
@@ -30,69 +26,33 @@ export default function ContactForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="grid gap-4 sm:grid-cols-2">
-        <div>
-          <label htmlFor="name" className="text-sm font-medium text-slate-700">
-            Name
-          </label>
-          <input
-            id="name"
-            name="name"
-            required
-            className="mt-1.5 w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm outline-none focus:border-brand-400 focus:ring-2 focus:ring-brand-100"
-            placeholder="Your name"
-          />
-        </div>
-        <div>
-          <label htmlFor="email" className="text-sm font-medium text-slate-700">
-            Email
-          </label>
-          <input
-            id="email"
-            name="email"
-            type="email"
-            required
-            className="mt-1.5 w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm outline-none focus:border-brand-400 focus:ring-2 focus:ring-brand-100"
-            placeholder="you@company.com"
-          />
-        </div>
-      </div>
-
+    <form onSubmit={handleSubmit} className="space-y-5">
       <div>
-        <label htmlFor="service" className="text-sm font-medium text-slate-700">
-          Service required
-        </label>
-        <select
-          id="service"
-          name="service"
-          className="mt-1.5 w-full rounded-lg border border-slate-200 bg-white px-3.5 py-2.5 text-sm outline-none focus:border-brand-400 focus:ring-2 focus:ring-brand-100"
-        >
-          <option>Web Development</option>
-          <option>Mobile App Development</option>
-          <option>Cloud &amp; DevOps</option>
-          <option>Custom Software</option>
-          <option>UI/UX Design</option>
-          <option>IT Support &amp; Maintenance</option>
-        </select>
+        <label htmlFor="fullname" className="field-label">Full name</label>
+        <input id="fullname" name="fullname" required className="field" placeholder="Your name" />
       </div>
-
       <div>
-        <label htmlFor="message" className="text-sm font-medium text-slate-700">
-          Project details
-        </label>
-        <textarea
-          id="message"
-          name="message"
-          rows={5}
-          required
-          className="mt-1.5 w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm outline-none focus:border-brand-400 focus:ring-2 focus:ring-brand-100"
-          placeholder="Tell us about your project..."
-        />
+        <label htmlFor="email" className="field-label">Email address</label>
+        <input id="email" name="email" type="email" required className="field" placeholder="you@company.com" />
       </div>
-
-      <button type="submit" className="btn-primary w-full sm:w-auto">
-        Send enquiry
+      <div>
+        <label htmlFor="phone" className="field-label">Phone number</label>
+        <input id="phone" name="phone" className="field" placeholder="+91 00000 00000" />
+      </div>
+      <div>
+        <label htmlFor="company" className="field-label">Company / business name</label>
+        <input id="company" name="company" className="field" placeholder="Company name" />
+      </div>
+      <div>
+        <label htmlFor="message" className="field-label">Your message</label>
+        <textarea id="message" name="message" rows={5} required className="field" placeholder="Tell us about your project..." />
+      </div>
+      <label className="flex items-start gap-3 text-sm text-slate-600">
+        <input type="checkbox" required className="mt-0.5 h-4 w-4 rounded border-slate-300" />
+        <span>I agree to the privacy policy and terms of service.</span>
+      </label>
+      <button type="submit" className="btn-primary w-full">
+        Send message
       </button>
     </form>
   );

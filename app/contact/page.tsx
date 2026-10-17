@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
-import ContactForm from "@/components/ContactForm";
 import Icon from "@/components/Icon";
+import PageHero from "@/components/PageHero";
+import ContactForm from "@/components/ContactForm";
 import { site } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -10,62 +11,76 @@ export const metadata: Metadata = {
 };
 
 const details = [
-  { icon: "mail", label: "Email", value: site.email },
-  { icon: "phone", label: "Phone", value: site.phone },
-  { icon: "pin", label: "Office", value: site.address },
-  { icon: "clock", label: "Hours", value: site.hours },
+  { icon: "phone", label: "Call us", value: site.phone, href: "tel:" + site.phoneHref },
+  { icon: "mail", label: "Email", value: site.email, href: "mailto:" + site.email },
+  { icon: "pin", label: "Location", value: site.address },
+  { icon: "clock", label: "Business hours", value: site.hours },
+];
+
+const socials = [
+  { name: "x", href: site.social.x },
+  { name: "facebook", href: site.social.facebook },
+  { name: "youtube", href: site.social.youtube },
+  { name: "instagram", href: site.social.instagram },
 ];
 
 export default function ContactPage() {
   return (
     <>
-      <section className="border-b border-slate-100 bg-gradient-to-b from-brand-50 to-white">
-        <div className="container-x py-16 sm:py-20">
-          <span className="eyebrow">Contact</span>
-          <h1 className="mt-3 max-w-3xl text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">
-            Let us talk about your project
-          </h1>
-          <p className="mt-5 max-w-2xl text-lg text-slate-600">
-            Share a few details and our team will respond within one working
-            day with next steps.
-          </p>
-        </div>
-      </section>
+      <PageHero title="Contact" />
 
-      <section className="section bg-white">
-        <div className="container-x grid gap-12 lg:grid-cols-5">
-          <div className="lg:col-span-3">
-            <h2 className="text-2xl font-bold text-slate-900">
-              Send us an enquiry
+      <section className="section">
+        <div className="container-x grid gap-12 lg:grid-cols-2">
+          <div>
+            <span className="eyebrow">Get in touch</span>
+            <h2 className="mt-3 text-3xl font-bold tracking-tight text-navy-800 sm:text-4xl">
+              Let&apos;s choose the best solution for your business!
             </h2>
-            <p className="mt-2 text-sm text-slate-600">
-              Fields marked required must be filled in.
-            </p>
-            <div className="mt-8">
-              <ContactForm />
+
+            <ul className="mt-8 space-y-6">
+              {details.map((item) => (
+                <li key={item.label} className="flex gap-4">
+                  <span className="flex h-11 w-11 flex-none items-center justify-center rounded-md bg-brand-50 text-brand-600">
+                    <Icon name={item.icon} className="h-5 w-5" />
+                  </span>
+                  <div>
+                    <div className="text-sm font-semibold text-brand-600">{item.label}</div>
+                    {item.href ? (
+                      <a href={item.href} className="text-sm text-slate-700 hover:underline">
+                        {item.value}
+                      </a>
+                    ) : (
+                      <div className="text-sm text-slate-700">{item.value}</div>
+                    )}
+                  </div>
+                </li>
+              ))}
+            </ul>
+
+            <div className="mt-8 flex gap-3">
+              {socials.map((s) => (
+                <a
+                  key={s.name}
+                  href={s.href}
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label={s.name}
+                  className="flex h-10 w-10 items-center justify-center rounded-full bg-brand-600 text-white transition hover:bg-brand-700"
+                >
+                  <Icon name={s.name} className="h-5 w-5" />
+                </a>
+              ))}
             </div>
           </div>
 
-          <div className="lg:col-span-2">
-            <div className="rounded-3xl border border-slate-100 bg-slate-50/60 p-8">
-              <h2 className="text-lg font-semibold text-slate-900">
-                Contact details
-              </h2>
-              <ul className="mt-6 space-y-5">
-                {details.map((item) => (
-                  <li key={item.label} className="flex gap-3">
-                    <div className="flex h-10 w-10 flex-none items-center justify-center rounded-lg bg-white text-brand-600 shadow-sm">
-                      <Icon name={item.icon} className="h-5 w-5" />
-                    </div>
-                    <div>
-                      <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                        {item.label}
-                      </div>
-                      <div className="text-sm text-slate-800">{item.value}</div>
-                    </div>
-                  </li>
-                ))}
-              </ul>
+          <div className="rounded-xl bg-slate-50 p-8">
+            <h3 className="text-xl font-semibold text-navy-800">Need consultation?</h3>
+            <p className="mt-2 text-sm text-slate-600">
+              Send your query or request a callback and our specialist will get
+              back to you shortly.
+            </p>
+            <div className="mt-7">
+              <ContactForm />
             </div>
           </div>
         </div>
