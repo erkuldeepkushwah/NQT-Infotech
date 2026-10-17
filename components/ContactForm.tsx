@@ -29,23 +29,23 @@ export default function ContactForm() {
     <form onSubmit={handleSubmit} className="space-y-5">
       <div>
         <label htmlFor="fullname" className="field-label">Full name</label>
-        <input id="fullname" name="fullname" required className="field" placeholder="Your name" />
+        <input id="fullname" name="fullname" required className="field" />
       </div>
       <div>
         <label htmlFor="email" className="field-label">Email address</label>
-        <input id="email" name="email" type="email" required className="field" placeholder="you@company.com" />
+        <input id="email" name="email" type="email" required className="field" />
       </div>
       <div>
         <label htmlFor="phone" className="field-label">Phone number</label>
-        <input id="phone" name="phone" className="field" placeholder="+91 00000 00000" />
+        <input id="phone" name="phone" className="field" />
       </div>
       <div>
         <label htmlFor="company" className="field-label">Company / business name</label>
-        <input id="company" name="company" className="field" placeholder="Company name" />
+        <input id="company" name="company" className="field" />
       </div>
       <div>
         <label htmlFor="message" className="field-label">Your message</label>
-        <textarea id="message" name="message" rows={5} required className="field" placeholder="Tell us about your project..." />
+        <textarea id="message" name="message" rows={5} required className="field" />
       </div>
       <label className="flex items-start gap-3 text-sm text-slate-600">
         <input type="checkbox" required className="mt-0.5 h-4 w-4 rounded border-slate-300" />

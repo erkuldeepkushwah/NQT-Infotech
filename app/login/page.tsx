@@ -23,11 +23,11 @@ export default function LoginPage() {
             <form className="mt-7 space-y-5">
               <div>
                 <label htmlFor="email" className="field-label">Email address</label>
-                <input id="email" name="email" type="email" className="field" placeholder="you@company.com" />
+                <input id="email" name="email" type="email" className="field" />
               </div>
               <div>
                 <label htmlFor="password" className="field-label">Password</label>
-                <input id="password" name="password" type="password" className="field" placeholder="Enter your password" />
+                <input id="password" name="password" type="password" className="field" />
               </div>
               <label className="flex items-center gap-3 text-sm text-slate-600">
                 <input type="checkbox" className="h-4 w-4 rounded border-slate-300" />
