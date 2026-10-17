@@ -1,0 +1,6 @@
+<svg width="160" height="40" viewBox="0 0 160 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="40" height="40" rx="10" fill="#2543E0"/>
+  <path d="M11 27V13h3.2l6.3 9.2V13H24v14h-3.2l-6.3-9.2V27H11z" fill="white"/>
+  <circle cx="29" cy="24" r="3.2" fill="#22D3EE"/>
+  <text x="50" y="27" font-family="Inter, Arial, sans-serif" font-size="16" font-weight="700" fill="#0F172A">NQT Infotech</text>
+</svg>
