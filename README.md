@@ -51,11 +51,11 @@ Everything you are likely to change lives in two files:
 - `lib/site.ts` - company details, services, courses, blog posts, team,
   testimonials, stats, process steps and timeline. Edit once and it updates
   across the whole site.
-- `lib/images.ts` - image helpers. The site ships with locally generated
-  placeholder artwork in `public/img/`, so it renders with no external
-  requests. Replace the two helper functions with your own image URLs (or
-  overwrite the files in `public/img/` keeping the same names) when you
-  have real photography.
+- `lib/images.ts` - image helpers. Real photos live in `public/img/<key>.jpg`
+  and are listed in the `WITH_PHOTO` array. Any slot without a photo falls
+  back to the generated placeholder artwork in `public/img/<key>.svg`, so the
+  layout never shows a broken image. To add a photo for an empty slot, drop
+  the file in as `public/img/<key>.jpg` and add the key to `WITH_PHOTO`.
 
 Brand colours and typography are defined in `tailwind.config.ts`.
 
