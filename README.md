@@ -1,6 +1,6 @@
-# NQT Infotech
+# Brivora
 
-Marketing website for **NQT Infotech**, an IT services company, built with
+Marketing website for **Brivora**, an IT services company, built with
 [Next.js](https://nextjs.org) (App Router) and Tailwind CSS.
 
 The layout follows a modern corporate IT-consulting design: a royal-blue and

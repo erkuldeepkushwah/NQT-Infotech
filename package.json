@@ -2,7 +2,7 @@
   "name": "nqt-infotech",
   "version": "2.0.0",
   "private": true,
-  "description": "NQT Infotech - IT services company website built with Next.js",
+  "description": "Brivora - IT services company website built with Next.js",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

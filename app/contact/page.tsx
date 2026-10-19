@@ -7,7 +7,7 @@ import { site } from "@/lib/site";
 export const metadata: Metadata = {
   title: "Contact",
   description:
-    "Contact NQT Infotech for web development, mobile apps, cloud and custom software projects.",
+    "Contact Brivora for web development, mobile apps, cloud and custom software projects.",
 };
 
 const details = [

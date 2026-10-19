@@ -1,12 +1,12 @@
 export const site = {
-  name: "NQT Infotech",
-  short: "NQT",
+  name: "Brivora",
+  short: "Brivora",
   tagline: "Clear IT solutions for your business",
   description:
-    "NQT Infotech delivers web, mobile, cloud and software solutions that help businesses operate efficiently, scale smartly and accelerate growth.",
+    "Brivora delivers web, mobile, cloud and software solutions that help businesses operate efficiently, scale smartly and accelerate growth.",
   heroText:
     "From strategy to implementation, we deliver web, mobile, cloud and software solutions that help you operate efficiently, scale smartly and accelerate growth.",
-  email: "nqtinfotech@gmail.com",
+  email: "brivora@gmail.com",
   phone: "+91 78986 92133",
   phoneHref: "+917898692133",
   address: "12 Vijay Nagar, Indore, Madhya Pradesh",
@@ -245,7 +245,7 @@ export const testimonials: Testimonial[] = [
   {
     metric: "65% growth in online sales",
     quote:
-      "NQT Infotech understood our business before writing a line of code. The new platform has genuinely changed how we sell.",
+      "Brivora understood our business before writing a line of code. The new platform has genuinely changed how we sell.",
     name: "Meera Iyer",
     role: "Director, HealthPlus",
     avatarIndex: 45,

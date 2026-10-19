@@ -5,7 +5,7 @@ import BlogExplorer from "@/components/BlogExplorer";
 export const metadata: Metadata = {
   title: "Blog",
   description:
-    "Insights, expert advice and company news from the NQT Infotech team.",
+    "Insights, expert advice and company news from the Brivora team.",
 };
 
 export default function BlogPage() {

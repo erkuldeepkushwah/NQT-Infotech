@@ -3,7 +3,7 @@ import AdminShell from "@/components/admin/AdminShell";
 
 export const metadata: Metadata = {
   title: "Admin",
-  description: "NQT Infotech administration.",
+  description: "Brivora administration.",
   robots: { index: false, follow: false },
 };
 

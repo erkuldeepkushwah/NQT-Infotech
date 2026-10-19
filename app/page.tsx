@@ -50,7 +50,7 @@ export default function HomePage() {
           <div className="relative">
             <img
               src={img("nqt-hero", 900, 640)}
-              alt="NQT Infotech team at work"
+              alt="Brivora team at work"
               className="w-full rounded-2xl object-cover shadow-2xl"
             />
           </div>
@@ -194,7 +194,7 @@ export default function HomePage() {
             <img src={img("nqt-benefits", 720, 720)} alt="IT consulting" className="w-full rounded-xl object-cover" />
             <div className="mt-6 rounded-xl border border-white/10 bg-white/5 p-6">
               <p className="text-sm leading-relaxed text-brand-100">
-                &ldquo;We started working with NQT Infotech to make our systems
+                &ldquo;We started working with Brivora to make our systems
                 smarter and more efficient. The impact on our daily operations
                 has been remarkable.&rdquo;
               </p>

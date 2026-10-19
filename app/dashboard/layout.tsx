@@ -3,7 +3,7 @@ import StudentShell from "@/components/StudentShell";
 
 export const metadata: Metadata = {
   title: "Dashboard",
-  description: "Your NQT Infotech learning dashboard.",
+  description: "Your Brivora learning dashboard.",
   robots: { index: false, follow: false },
 };
 

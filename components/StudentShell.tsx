@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { onAuthStateChanged, signOut, type User } from "firebase/auth";
 import { auth, isFirebaseConfigured } from "@/lib/firebase";
 import { isAdminEmail } from "@/lib/admin";
+import LogoMark from "@/components/LogoMark";
 
 const NAV = [
   { label: "Dashboard", href: "/dashboard", icon: "chart" },
@@ -84,9 +85,10 @@ export default function StudentShell({ children }: { children: React.ReactNode }
             (open ? "translate-x-0" : "-translate-x-full")
           }
         >
-          <div className="flex h-[68px] items-center px-6">
+          <div className="flex h-[68px] items-center gap-2.5 px-6">
+            <LogoMark size={26} />
             <span className="text-base font-extrabold tracking-tight text-white">
-              NQT<span className="font-medium text-brand-300"> Learning</span>
+              Brivora<span className="font-medium text-brand-300"> Learning</span>
             </span>
           </div>
 

@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   },
   description: site.description,
   keywords: [
-    "NQT Infotech",
+    "Brivora",
     "IT services",
     "software development",
     "web development",

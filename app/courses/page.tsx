@@ -9,7 +9,7 @@ import { courseBenefits, courses } from "@/lib/site";
 export const metadata: Metadata = {
   title: "Courses",
   description:
-    "Hands-on IT training courses from NQT Infotech: data analytics, data science, full stack web development and more.",
+    "Hands-on IT training courses from Brivora: data analytics, data science, full stack web development and more.",
 };
 
 export default function CoursesPage() {
@@ -30,7 +30,7 @@ export default function CoursesPage() {
           <div>
             <SectionHeading
               eyebrow="Why learn with us"
-              title="Why learn with NQT Infotech"
+              title="Why learn with Brivora"
               subtitle="Our courses are taught by engineers who build these systems every day, so you learn what actually works in industry."
             />
           </div>

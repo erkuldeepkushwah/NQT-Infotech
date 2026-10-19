@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { onAuthStateChanged, signOut, type User } from "firebase/auth";
 import { auth, isFirebaseConfigured } from "@/lib/firebase";
 import { isAdminEmail } from "@/lib/admin";
-import Logo from "@/components/Logo";
+import LogoMark from "@/components/LogoMark";
 
 type NavItem = {
   label: string;
@@ -110,9 +110,10 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
             (open ? "translate-x-0" : "-translate-x-full")
           }
         >
-          <div className="flex h-[68px] items-center px-6">
+          <div className="flex h-[68px] items-center gap-2.5 px-6">
+            <LogoMark size={26} />
             <span className="text-base font-extrabold tracking-tight text-white">
-              NQT<span className="font-medium text-brand-300"> Admin</span>
+              Brivora<span className="font-medium text-brand-300"> Admin</span>
             </span>
           </div>
 

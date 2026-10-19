@@ -4,7 +4,7 @@ import LoginForm from "@/components/LoginForm";
 
 export const metadata: Metadata = {
   title: "Login",
-  description: "Sign in to the NQT Infotech client portal.",
+  description: "Sign in to the Brivora client portal.",
 };
 
 export default function LoginPage() {

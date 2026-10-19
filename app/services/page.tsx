@@ -10,7 +10,7 @@ import { process, services, techStack } from "@/lib/site";
 export const metadata: Metadata = {
   title: "Services",
   description:
-    "Web development, mobile apps, cloud, custom software, UI/UX design and IT support from NQT Infotech.",
+    "Web development, mobile apps, cloud, custom software, UI/UX design and IT support from Brivora.",
 };
 
 export default function ServicesPage() {

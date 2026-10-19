@@ -12,7 +12,7 @@ import { milestones, philosophy, site, stats, team, whyUsBullets } from "@/lib/s
 export const metadata: Metadata = {
   title: "About",
   description:
-    "NQT Infotech is an IT services company helping businesses build reliable digital products.",
+    "Brivora is an IT services company helping businesses build reliable digital products.",
 };
 
 export default function AboutPage() {
