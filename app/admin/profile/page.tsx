@@ -16,7 +16,7 @@ export default function AdminProfilePage() {
   const rows: [string, string][] = [
     ["Name", user?.displayName || "-"],
     ["Email", user?.email || "-"],
-    ["Email verified", user?.emailVerified ? "Yes" : "Not yet"],
+    ["Email verified", user?.emailVerified ? "Yes" : "Not required for admin"],
     ["Role", "Administrator"],
     ["User ID", user?.uid || "-"],
   ];

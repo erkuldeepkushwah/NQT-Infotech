@@ -15,6 +15,7 @@ import {
   type User,
 } from "firebase/auth";
 import { auth, db, isFirebaseConfigured } from "@/lib/firebase";
+import { isAdminEmail } from "@/lib/admin";
 
 type Mode = "login" | "signup";
 
@@ -181,7 +182,7 @@ export default function LoginForm() {
           {user.displayName || name || user.email}
         </p>
 
-        {!user.emailVerified ? (
+        {!user.emailVerified && !isAdminEmail(user.email) ? (
           <div className="mt-5 rounded-md bg-white/70 px-4 py-3 text-left text-xs text-slate-600">
             <p>Please verify your email address - we sent a link to {user.email}.</p>
             <button

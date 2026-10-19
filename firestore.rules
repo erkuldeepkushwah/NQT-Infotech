@@ -6,6 +6,9 @@ service cloud.firestore {
     // ---------------------------------------------------------------- admins
     // Admin access is by email address. Add or remove addresses here AND in
     // lib/admin.ts (the UI reads that list, the database enforces this one).
+    //
+    // A verified email is deliberately NOT required - the address is taken from
+    // the sign-in token, which carries it either way.
     function isAdmin() {
       return request.auth != null
         && request.auth.token.email != null

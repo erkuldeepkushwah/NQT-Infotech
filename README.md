@@ -117,9 +117,13 @@ browser, Firestore would refuse their reads and writes.
 1. Firebase console -> Authentication -> Users -> **Add user**. Use an email from
 the admin list (e.g. `brivora@gmail.com`) and choose a strong password. Do not
 reuse a password that has been shared anywhere.
-2. Open that account's verification email, or send a new one, so the address is
-   verified.
-3. Sign in at `/login` with those details, then open `/admin`.
+2. Sign in at `/login` with those details, then open `/admin`.
+
+Admin access does **not** require a verified email address. The rules match on
+the email carried in the sign-in token, and that is present whether or not the
+address has been verified - so an admin can sign in and use the dashboard
+straight away. Ordinary users who sign up through the form are still sent a
+verification link, and that reminder is only shown to non-admin accounts.
 
 Passwords are held by Firebase Authentication. Nothing in this repository
 contains one, and the site can never read one.
