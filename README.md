@@ -66,10 +66,17 @@ Brand colours and typography are defined in `tailwind.config.ts`.
 The live site is published from the `docs/` folder on `main`:
 
 ```bash
-npm run build:pages     # static export into ./out
-rm -rf docs && cp -r out docs
+npm run build:pages      # static export into ./out
+cp -r out/. docs/        # copy over the new build, keep the old files
 git add docs && git commit -m "Deploy" && git push
 ```
+
+Do **not** delete `docs/` before copying (`rm -rf docs && cp -r out docs`).
+Old builds leave hashed files under `docs/_next/static/` behind, and a visitor
+whose browser still holds the previous HTML will ask for exactly those files.
+If they are gone the page fails with "Application error: a client-side
+exception has occurred" until that cached HTML expires. Copying over the top
+keeps the old files in place so cached visitors keep working.
 
 GitHub Pages serves it at https://erkuldeepkushwah.github.io/NQT-Infotech/ .
 
