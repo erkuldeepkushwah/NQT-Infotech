@@ -5,7 +5,6 @@ import PageHero from "@/components/PageHero";
 import ServiceCard from "@/components/ServiceCard";
 import CTABand from "@/components/CTABand";
 import SectionHeading from "@/components/SectionHeading";
-import { img } from "@/lib/images";
 import { process, services, techStack } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -24,19 +23,6 @@ export default function ServicesPage() {
           {services.map((service) => (
             <ServiceCard key={service.slug} service={service} />
           ))}
-        </div>
-      </section>
-
-      <section className="section bg-slate-50">
-        <div className="container-x">
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            <img src={img("svc-g1", 640, 420)} alt="Project work" className="h-56 w-full rounded-xl object-cover" />
-            <img src={img("svc-g2", 640, 420)} alt="Design review" className="h-56 w-full rounded-xl object-cover" />
-            <img src={img("svc-g3", 640, 420)} alt="Development" className="h-56 w-full rounded-xl object-cover" />
-            <img src={img("svc-g4", 640, 420)} alt="Team standup" className="h-56 w-full rounded-xl object-cover" />
-            <img src={img("svc-g5", 640, 420)} alt="Client workshop" className="h-56 w-full rounded-xl object-cover" />
-            <img src={img("svc-g6", 640, 420)} alt="Deployment" className="h-56 w-full rounded-xl object-cover" />
-          </div>
         </div>
       </section>
 
