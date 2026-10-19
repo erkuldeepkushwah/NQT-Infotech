@@ -4,13 +4,12 @@ import { usePathname } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
-// The public navbar and footer wrap the marketing pages. The admin area is a
-// standalone app, so it renders without them.
+// The public navbar and footer wrap the marketing pages. The admin area and the
+// student dashboard are standalone apps, so they render without them.
 export default function SiteChrome({ children }: { children: React.ReactNode }) {
-  const pathname = usePathname();
-  const isAdmin = (pathname || "").startsWith("/admin");
+  const pathname = usePathname() || "";
 
-  if (isAdmin) {
+  if (pathname.startsWith("/admin") || pathname.startsWith("/dashboard")) {
     return <>{children}</>;
   }
 

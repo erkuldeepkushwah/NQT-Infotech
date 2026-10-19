@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { doc, serverTimestamp, setDoc } from "firebase/firestore";
 import {
@@ -43,6 +44,7 @@ function codeOf(err: unknown): string {
 }
 
 export default function LoginForm() {
+  const router = useRouter();
   const [mode, setMode] = useState<Mode>("login");
   const [user, setUser] = useState<User | null>(null);
   const [name, setName] = useState("");
@@ -84,6 +86,9 @@ export default function LoginForm() {
       );
       await signInWithEmailAndPassword(auth, email, password);
       form.reset();
+      // Straight to the right dashboard: admins to the admin area, everyone
+      // else to their learning dashboard.
+      router.replace(isAdminEmail(email) ? "/admin" : "/dashboard");
     } catch (err) {
       setError(
         ERROR_MESSAGES[codeOf(err)] ||
@@ -140,6 +145,7 @@ export default function LoginForm() {
         }
       }
       form.reset();
+      router.replace("/dashboard");
     } catch (err) {
       setError(
         ERROR_MESSAGES[codeOf(err)] ||

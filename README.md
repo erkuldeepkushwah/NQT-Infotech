@@ -17,7 +17,12 @@ content system.
 | `/courses` | Training course cards with pricing and enrolment CTAs |
 | `/blog` | Category filter and article grid |
 | `/contact` | Contact details and consultation request form |
-| `/login` | Client portal login screen |
+| `/login` | Sign in, or register a new account |
+| `/dashboard` | Student dashboard - enrolled courses, progress, profile |
+| `/admin` | Admin dashboard - users, contact queries, courses, payments |
+
+After signing in, an administrator lands on `/admin` and everyone else lands on
+`/dashboard`.
 
 ## Getting started
 
