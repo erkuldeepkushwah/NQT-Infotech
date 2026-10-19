@@ -4,6 +4,10 @@
 // photo yet falls back to the generated placeholder artwork in
 // `public/img/<key>.svg`, so the layout never shows a broken image.
 
+// Set by the GitHub Pages build so asset paths resolve under the
+// /NQT-Infotech/ sub-path. Empty for normal local builds.
+const BASE = process.env.NEXT_PUBLIC_BASE_PATH || "";
+
 const WITH_PHOTO = [
   "about-a",
   "about-b",
@@ -57,14 +61,14 @@ const WITH_PHOTO = [
 export function img(seed: string, w: number, h: number): string {
   void w;
   void h;
-  return WITH_PHOTO.indexOf(seed) !== -1
+  return BASE + (WITH_PHOTO.indexOf(seed) !== -1
     ? "/img/" + seed + ".jpg"
-    : "/img/" + seed + ".svg";
+    : "/img/" + seed + ".svg");
 }
 
 export function avatar(n: number): string {
   const key = "avatar-" + n;
-  return WITH_PHOTO.indexOf(key) !== -1
+  return BASE + (WITH_PHOTO.indexOf(key) !== -1
     ? "/img/" + key + ".jpg"
-    : "/img/" + key + ".svg";
+    : "/img/" + key + ".svg");
 }

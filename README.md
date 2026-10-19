@@ -61,5 +61,24 @@ Brand colours and typography are defined in `tailwind.config.ts`.
 
 ## Deploy
 
-The easiest way to deploy is [Vercel](https://vercel.com/new). Any Node.js
-host that supports Next.js will also work.
+### GitHub Pages
+
+The live site is published from the `docs/` folder on `main`:
+
+```bash
+npm run build:pages     # static export into ./out
+rm -rf docs && cp -r out docs
+git add docs && git commit -m "Deploy" && git push
+```
+
+GitHub Pages serves it at https://erkuldeepkushwah.github.io/NQT-Infotech/ .
+
+Because the site lives under a sub-path, the Pages build uses a base path of
+`/NQT-Infotech` (set in `scripts/build-pages.mjs`). If you rename the
+repository, update `PAGES_BASE_PATH` there to match.
+
+### Other hosts
+
+Any static host works with the `out/` folder from `npm run build:pages`.
+[Vercel](https://vercel.com/new) and Netlify also build the site directly from
+the repository - use the default build command (`npm run build`) there.
