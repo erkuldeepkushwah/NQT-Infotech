@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { doc, serverTimestamp, setDoc } from "firebase/firestore";
@@ -12,7 +11,6 @@ import {
   sendEmailVerification,
   setPersistence,
   signInWithEmailAndPassword,
-  signOut,
   updateProfile,
   type User,
 } from "firebase/auth";
@@ -46,23 +44,24 @@ function codeOf(err: unknown): string {
 export default function LoginForm() {
   const router = useRouter();
   const [mode, setMode] = useState<Mode>("login");
-  const [user, setUser] = useState<User | null>(null);
-  const [name, setName] = useState("");
+  const [signedIn, setSignedIn] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
-  const [notice, setNotice] = useState("");
 
-  // The form is rendered straight away so it is present in the static HTML.
-  // If a session is found we swap in the signed-in view.
+  // Anyone who already has a session goes straight to their dashboard - there is
+  // no "signed in" screen to click through. Sign out from the dashboard sidebar.
   useEffect(() => {
     if (!auth) return;
-    return onAuthStateChanged(auth, setUser);
-  }, []);
+    return onAuthStateChanged(auth, (user: User | null) => {
+      if (!user) return;
+      setSignedIn(true);
+      router.replace(isAdminEmail(user.email) ? "/admin" : "/dashboard");
+    });
+  }, [router]);
 
   function switchMode(next: Mode) {
     setMode(next);
     setError("");
-    setNotice("");
   }
 
   async function handleLogin(event: React.FormEvent<HTMLFormElement>) {
@@ -86,15 +85,12 @@ export default function LoginForm() {
       );
       await signInWithEmailAndPassword(auth, email, password);
       form.reset();
-      // Straight to the right dashboard: admins to the admin area, everyone
-      // else to their learning dashboard.
-      router.replace(isAdminEmail(email) ? "/admin" : "/dashboard");
+      // onAuthStateChanged above takes over and redirects.
     } catch (err) {
       setError(
         ERROR_MESSAGES[codeOf(err)] ||
           "Could not sign you in. Please check your details and try again."
       );
-    } finally {
       setBusy(false);
     }
   }
@@ -122,7 +118,6 @@ export default function LoginForm() {
       const credential = await createUserWithEmailAndPassword(auth, email, password);
       if (fullName) {
         await updateProfile(credential.user, { displayName: fullName });
-        setName(fullName);
       }
       try {
         await sendEmailVerification(credential.user);
@@ -145,31 +140,13 @@ export default function LoginForm() {
         }
       }
       form.reset();
-      router.replace("/dashboard");
+      // onAuthStateChanged above takes over and redirects.
     } catch (err) {
       setError(
         ERROR_MESSAGES[codeOf(err)] ||
           "Could not create your account. Please try again."
       );
-    } finally {
       setBusy(false);
-    }
-  }
-
-  async function handleSignOut() {
-    if (!auth) return;
-    await signOut(auth);
-    setName("");
-    setMode("login");
-  }
-
-  async function resendVerification() {
-    if (!auth || !auth.currentUser) return;
-    try {
-      await sendEmailVerification(auth.currentUser);
-      setNotice("Verification email sent.");
-    } catch {
-      setNotice("Could not send the email. Please try again later.");
     }
   }
 
@@ -181,38 +158,10 @@ export default function LoginForm() {
     );
   }
 
-  if (user) {
+  if (signedIn) {
     return (
-      <div className="rounded-xl border border-brand-100 bg-brand-50 p-8 text-center">
-        <h3 className="text-lg font-semibold text-navy-800">You are signed in</h3>
-        <p className="mt-2 text-sm text-slate-600">
-          {user.displayName || name || user.email}
-        </p>
-
-        {!user.emailVerified && !isAdminEmail(user.email) ? (
-          <div className="mt-5 rounded-md bg-white/70 px-4 py-3 text-left text-xs text-slate-600">
-            <p>Please verify your email address - we sent a link to {user.email}.</p>
-            <button
-              type="button"
-              onClick={resendVerification}
-              className="mt-2 font-semibold text-brand-600 hover:underline"
-            >
-              Resend verification email
-            </button>
-            {notice ? <p className="mt-2 text-brand-700">{notice}</p> : null}
-          </div>
-        ) : null}
-
-        <div className="mt-6 flex flex-col gap-3">
-          {isAdminEmail(user.email) ? (
-            <Link href="/admin" className="btn-primary w-full">
-              Go to admin panel
-            </Link>
-          ) : null}
-          <button type="button" onClick={handleSignOut} className="btn-ghost w-full">
-            Sign out
-          </button>
-        </div>
+      <div className="py-6 text-center text-sm text-slate-600">
+        Taking you to your dashboard...
       </div>
     );
   }
