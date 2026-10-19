@@ -32,19 +32,14 @@ function codeOf(err: unknown): string {
 
 export default function LoginForm() {
   const [user, setUser] = useState<User | null>(null);
-  const [ready, setReady] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
 
+  // The form is rendered straight away so it is present in the static HTML.
+  // If a session is found we swap in the signed-in view.
   useEffect(() => {
-    if (!auth) {
-      setReady(true);
-      return;
-    }
-    return onAuthStateChanged(auth, (u) => {
-      setUser(u);
-      setReady(true);
-    });
+    if (!auth) return;
+    return onAuthStateChanged(auth, setUser);
   }, []);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -81,10 +76,6 @@ export default function LoginForm() {
   async function handleSignOut() {
     if (!auth) return;
     await signOut(auth);
-  }
-
-  if (!ready) {
-    return <p className="text-sm text-slate-500">Checking your session...</p>;
   }
 
   if (!isFirebaseConfigured) {
