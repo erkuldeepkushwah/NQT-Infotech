@@ -101,6 +101,60 @@ export const services: Service[] = [
     points: ["Managed support", "Security audits", "Backups", "SLA plans"],
     image: "nqt-support",
   },
+  {
+    slug: "artificial-intelligence",
+    title: "Artificial Intelligence & Machine Learning",
+    description:
+      "Intelligent AI solutions and machine learning models that automate processes, uncover insights and improve business efficiency.",
+    icon: "cpu",
+    points: ["Predictive models", "Process automation", "Computer vision", "Chatbots & assistants"],
+    image: "nqt-ai",
+  },
+  {
+    slug: "cybersecurity",
+    title: "Cybersecurity Solutions",
+    description:
+      "Protect your business with proactive security assessments, threat detection and solutions designed to safeguard critical data.",
+    icon: "shield",
+    points: ["Security audits", "Threat detection", "Penetration testing", "Incident response"],
+    image: "nqt-cybersecurity",
+  },
+  {
+    slug: "data-analytics-bi",
+    title: "Data Analytics & Business Intelligence",
+    description:
+      "Transform business data into actionable insights through interactive dashboards, advanced analytics and smarter reporting.",
+    icon: "chart",
+    points: ["Dashboards & reporting", "Data warehousing", "KPI tracking", "Self-serve analytics"],
+    image: "nqt-analytics",
+  },
+  {
+    slug: "ecommerce-development",
+    title: "E-commerce Development",
+    description:
+      "Build secure, scalable online stores with intuitive shopping experiences, payment integrations and streamlined order management.",
+    icon: "cart",
+    points: ["Storefront development", "Payment integration", "Order management", "Inventory sync"],
+    image: "nqt-ecommerce",
+  },
+  {
+    slug: "api-development",
+    title: "API Development & Integration",
+    description:
+      "Connect applications, automate data exchange and integrate third-party services with reliable, well-designed APIs.",
+    icon: "link",
+    points: ["REST & GraphQL", "Third-party integrations", "Authentication", "API documentation"],
+    image: "nqt-api",
+  },
+  {
+    slug: "digital-transformation",
+    title: "Digital Transformation Consulting",
+    description:
+      "Modernize business operations with technology roadmaps, workflow optimization and practical digital transformation strategies.",
+    icon: "trend",
+    points: ["Technology roadmaps", "Workflow automation", "Legacy modernisation", "Change management"],
+    image: "nqt-digital",
+  },
 ];
 
 export const aboutBullets = [
