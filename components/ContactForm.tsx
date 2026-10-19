@@ -1,24 +1,57 @@
 "use client";
 
 import { useState } from "react";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { db, isFirebaseConfigured } from "@/lib/firebase";
+
+type Status = "idle" | "sending" | "sent" | "error";
 
 export default function ContactForm() {
-  const [sent, setSent] = useState(false);
+  const [status, setStatus] = useState<Status>("idle");
+  const [notice, setNotice] = useState("");
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setSent(true);
+    const form = event.currentTarget;
+    const data = new FormData(form);
+
+    if (!isFirebaseConfigured || !db) {
+      setStatus("error");
+      setNotice("The enquiry form is not connected yet. Please email us directly.");
+      return;
+    }
+
+    setStatus("sending");
+    setNotice("");
+
+    try {
+      await addDoc(collection(db, "enquiries"), {
+        name: String(data.get("fullname") || "").trim(),
+        email: String(data.get("email") || "").trim(),
+        phone: String(data.get("phone") || "").trim(),
+        company: String(data.get("company") || "").trim(),
+        message: String(data.get("message") || "").trim(),
+        createdAt: serverTimestamp(),
+      });
+      form.reset();
+      setStatus("sent");
+    } catch (err) {
+      setStatus("error");
+      setNotice(
+        "Sorry, your message could not be sent. Please try again, or email us directly."
+      );
+    }
   }
 
-  if (sent) {
+  if (status === "sent") {
     return (
       <div className="rounded-xl border border-brand-100 bg-brand-50 p-8 text-center">
         <h3 className="text-lg font-semibold text-navy-800">Thank you!</h3>
         <p className="mt-2 text-sm text-slate-600">
-          Your enquiry has been noted. Our team will get back to you within one
-          working day.
+          Your enquiry has been received. Our team will get back to you within
+          one working day.
         </p>
-        <button type="button" onClick={() => setSent(false)} className="btn-ghost mt-5">
+        <button type="button" onClick={() => setStatus("idle")} className="btn-ghost mt-5">
           Send another message
         </button>
       </div>
@@ -51,8 +84,15 @@ export default function ContactForm() {
         <input type="checkbox" required className="mt-0.5 h-4 w-4 rounded border-slate-300" />
         <span>I agree to the privacy policy and terms of service.</span>
       </label>
-      <button type="submit" className="btn-primary w-full">
-        Send message
+
+      {status === "error" && notice ? (
+        <p role="alert" className="rounded-md bg-red-50 px-4 py-3 text-sm text-red-700">
+          {notice}
+        </p>
+      ) : null}
+
+      <button type="submit" disabled={status === "sending"} className="btn-primary w-full disabled:opacity-60">
+        {status === "sending" ? "Sending..." : "Send message"}
       </button>
     </form>
   );

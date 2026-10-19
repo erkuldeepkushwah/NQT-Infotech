@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import PageHero from "@/components/PageHero";
+import LoginForm from "@/components/LoginForm";
 
 export const metadata: Metadata = {
   title: "Login",
@@ -20,30 +20,9 @@ export default function LoginPage() {
               Enter your details below to sign in.
             </p>
 
-            <form className="mt-7 space-y-5">
-              <div>
-                <label htmlFor="email" className="field-label">Email address</label>
-                <input id="email" name="email" type="email" className="field" />
-              </div>
-              <div>
-                <label htmlFor="password" className="field-label">Password</label>
-                <input id="password" name="password" type="password" className="field" />
-              </div>
-              <label className="flex items-center gap-3 text-sm text-slate-600">
-                <input type="checkbox" className="h-4 w-4 rounded border-slate-300" />
-                <span>Remember me on this device</span>
-              </label>
-              <button type="submit" className="btn-primary w-full">
-                Log in
-              </button>
-            </form>
-
-            <p className="mt-6 text-center text-sm text-slate-600">
-              Don&apos;t have an account?{" "}
-              <Link href="/contact" className="font-semibold text-brand-600 hover:underline">
-                Contact us to get access
-              </Link>
-            </p>
+            <div className="mt-7">
+              <LoginForm />
+            </div>
           </div>
         </div>
       </section>

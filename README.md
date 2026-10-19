@@ -59,6 +59,42 @@ Everything you are likely to change lives in two files:
 
 Brand colours and typography are defined in `tailwind.config.ts`.
 
+## Firebase
+
+Firebase powers two things on the site:
+
+- **Contact form** - each enquiry is written to the `enquiries` collection in
+  Cloud Firestore, then read in the Firebase console.
+- **Login page** - Firebase Authentication with the Email/Password provider.
+
+### Setup
+
+1. Copy the env file and fill it in from Firebase console -> Project settings
+   -> Your apps -> Web app:
+
+   ```bash
+   cp .env.local.example .env.local
+   ```
+
+   `.env.local` is git-ignored. The values are still public once the site is
+   built - Firebase web config is public by design - so they are protected by
+   the rules below, not by secrecy.
+
+2. **Authentication** - in the console, enable the Email/Password sign-in
+   provider, then add users under Authentication -> Users. Anyone with an
+   account can sign in at `/login`.
+
+3. **Firestore** - create the database, then publish the rules in
+   `firestore.rules` (Firestore -> Rules). They let anyone *create* an
+   enquiry but nobody read, edit or delete one from the browser.
+
+4. **Lock down the API key** - in Google Cloud console -> APIs & Services ->
+   Credentials, restrict the browser key to your site's domain, and consider
+   enabling Firebase App Check.
+
+Without `.env.local` the site still builds and runs: the contact form and
+login just report that they are not connected yet.
+
 ## Deploy
 
 ### GitHub Pages
