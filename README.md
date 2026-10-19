@@ -80,13 +80,9 @@ Firebase powers two things on the site:
    built - Firebase web config is public by design - so they are protected by
    the rules below, not by secrecy.
 
-2. **Authentication** - in the console, enable the **Email/Password** and
-   **Email link (passwordless sign-in)** providers. Under Authentication ->
-   Settings -> Authorized domains, add the domain the site runs on
-   (`erkuldeepkushwah.github.io`) - without it the "sign in with an email
-   link" option cannot send its email. Users can then register at `/login`
-   with their name, email and password, or sign in without a password using
-   a one-time email link (a fresh link is sent on every attempt).
+2. **Authentication** - in the console, enable the Email/Password sign-in
+   provider. Users can then register at `/login` with their name, email and
+   password, and sign in with the same details.
 
 3. **Firestore** - create the database, then publish the rules in
    `firestore.rules` (Firestore -> Rules). They let anyone *create* an
