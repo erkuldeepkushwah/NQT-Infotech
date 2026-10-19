@@ -72,6 +72,11 @@ export function img(seed: string, w: number, h: number): string {
     : "/img/" + seed + ".svg");
 }
 
+// Cut-out artwork (transparent PNG) such as the hero figure.
+export function png(name: string): string {
+  return BASE + "/img/" + name + ".png";
+}
+
 export function avatar(n: number): string {
   const key = "avatar-" + n;
   return BASE + (WITH_PHOTO.indexOf(key) !== -1

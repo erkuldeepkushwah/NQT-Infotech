@@ -7,7 +7,7 @@ import StatStrip from "@/components/StatStrip";
 import LogoStrip from "@/components/LogoStrip";
 import CTABand from "@/components/CTABand";
 import SectionHeading from "@/components/SectionHeading";
-import { img } from "@/lib/images";
+import { img, png } from "@/lib/images";
 import {
   aboutBullets,
   benefits,
@@ -47,11 +47,12 @@ export default function HomePage() {
               </Link>
             </div>
           </div>
-          <div className="relative">
+          <div className="relative flex items-end justify-center lg:justify-end">
+            <div className="pointer-events-none absolute left-1/2 top-1/2 -z-10 h-[280px] w-[280px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-b from-white/35 to-brand-400/10 blur-3xl sm:h-[380px] sm:w-[380px]" />
             <img
-              src={img("nqt-hero", 900, 640)}
-              alt="Brivora team at work"
-              className="w-full rounded-2xl object-cover shadow-2xl"
+              src={png("brivora-hero")}
+              alt="Brivora consultant working on a laptop"
+              className="w-[250px] drop-shadow-[0_28px_50px_rgba(2,10,35,0.6)] sm:w-[310px] lg:w-[360px]"
             />
           </div>
         </div>
