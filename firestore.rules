@@ -3,11 +3,17 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Contact form submissions.
-    //
-    // Anyone may create a new enquiry - that is what a public contact form
-    // does. Nobody can read, edit or delete them from the browser; read them
-    // in the Firebase console (or with the Admin SDK).
+    // ---------------------------------------------------------------- admins
+    // Admin access is by email address. Add or remove addresses here AND in
+    // lib/admin.ts (the UI reads that list, the database enforces this one).
+    function isAdmin() {
+      return request.auth != null
+        && request.auth.token.email != null
+        && request.auth.token.email.lower() in ['brivora@gmail.com'];
+    }
+
+    // ------------------------------------------------------------- enquiries
+    // Contact form submissions: anyone may create one, only admins can read.
     match /enquiries/{docId} {
       allow create: if
         request.resource.data.keys().hasOnly(
@@ -28,10 +34,46 @@ service cloud.firestore {
         && request.resource.data.message.size() <= 5000
         && request.resource.data.createdAt == request.time;
 
-      allow read, update, delete: if false;
+      allow read, update, delete: if isAdmin();
     }
 
-    // Everything else is closed by default.
+    // ----------------------------------------------------------------- users
+    // A signed-in user owns their own profile document and may create it once.
+    match /users/{uid} {
+      allow create: if request.auth != null
+        && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(
+          ['name', 'email', 'role', 'status', 'createdAt']
+        )
+        && request.resource.data.role == 'user'
+        && request.resource.data.status == 'active';
+
+      allow read: if request.auth != null
+        && (request.auth.uid == uid || isAdmin());
+
+      allow update, delete: if isAdmin();
+    }
+
+    // --------------------------------------------------------------- courses
+    // Course catalogue: public to read, admins write.
+    match /courses/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // -------------------------------------------------------------- payments
+    // Students submit their own payment requests; only admins see everyone's.
+    match /payments/{docId} {
+      allow create: if request.auth != null
+        && request.resource.data.uid == request.auth.uid;
+
+      allow read: if isAdmin()
+        || (request.auth != null && resource.data.uid == request.auth.uid);
+
+      allow update, delete: if isAdmin();
+    }
+
+    // Everything else is closed.
     match /{document=**} {
       allow read, write: if false;
     }

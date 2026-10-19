@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { doc, serverTimestamp, setDoc } from "firebase/firestore";
 import {
   browserLocalPersistence,
   browserSessionPersistence,
@@ -13,7 +14,7 @@ import {
   updateProfile,
   type User,
 } from "firebase/auth";
-import { auth, isFirebaseConfigured } from "@/lib/firebase";
+import { auth, db, isFirebaseConfigured } from "@/lib/firebase";
 
 type Mode = "login" | "signup";
 
@@ -120,6 +121,21 @@ export default function LoginForm() {
         await sendEmailVerification(credential.user);
       } catch {
         // not fatal - the account exists and they are signed in
+      }
+      if (db) {
+        try {
+          // Profile document the admin area reads. Firestore rules only allow a
+          // user to create their own document, with role 'user'.
+          await setDoc(doc(db, "users", credential.user.uid), {
+            name: fullName,
+            email,
+            role: "user",
+            status: "active",
+            createdAt: serverTimestamp(),
+          });
+        } catch {
+          // not fatal - the account still works
+        }
       }
       form.reset();
     } catch (err) {

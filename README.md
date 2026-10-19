@@ -95,6 +95,41 @@ Firebase powers two things on the site:
 Without `.env.local` the site still builds and runs: the contact form and
 login just report that they are not connected yet.
 
+## Admin area
+
+The dashboard lives at `/admin` and shows registered users, contact queries, the
+course catalogue and payment requests.
+
+### Who is an admin
+
+Admin access is decided by **email address**, and it is enforced in Firestore
+Security Rules - not in the page. The email list lives in two places and both
+must be kept in step:
+
+- `lib/admin.ts` - decides what the interface shows
+- `firestore.rules` - decides what the database actually allows
+
+The UI check is only cosmetic: even if someone edited the JavaScript in their
+browser, Firestore would refuse their reads and writes.
+
+### Setting up the first admin
+
+1. Firebase console -> Authentication -> Users -> **Add user**. Use an email from
+the admin list (e.g. `brivora@gmail.com`) and choose a strong password. Do not
+reuse a password that has been shared anywhere.
+2. Open that account's verification email, or send a new one, so the address is
+   verified.
+3. Sign in at `/login` with those details, then open `/admin`.
+
+Passwords are held by Firebase Authentication. Nothing in this repository
+contains one, and the site can never read one.
+
+### Adding or removing admins
+
+Put the email in `lib/admin.ts` and in the `isAdmin()` function in
+`firestore.rules`, then re-deploy and re-publish the rules. To revoke access,
+remove it from both.
+
 ## Deploy
 
 ### GitHub Pages
