@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { doc, serverTimestamp, setDoc } from "firebase/firestore";
 import {
@@ -196,9 +197,16 @@ export default function LoginForm() {
           </div>
         ) : null}
 
-        <button type="button" onClick={handleSignOut} className="btn-ghost mt-6">
-          Sign out
-        </button>
+        <div className="mt-6 flex flex-col gap-3">
+          {isAdminEmail(user.email) ? (
+            <Link href="/admin" className="btn-primary w-full">
+              Go to admin panel
+            </Link>
+          ) : null}
+          <button type="button" onClick={handleSignOut} className="btn-ghost w-full">
+            Sign out
+          </button>
+        </div>
       </div>
     );
   }

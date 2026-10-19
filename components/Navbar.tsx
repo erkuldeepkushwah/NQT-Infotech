@@ -2,13 +2,24 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { onAuthStateChanged, type User } from "firebase/auth";
 import Logo from "@/components/Logo";
 import { navLinks } from "@/lib/site";
+import { auth } from "@/lib/firebase";
+import { isAdminEmail } from "@/lib/admin";
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
   const pathname = usePathname();
+
+  useEffect(() => {
+    if (!auth) return;
+    return onAuthStateChanged(auth, setUser);
+  }, []);
+
+  const showAdmin = isAdminEmail(user?.email);
 
   return (
     <header className="sticky top-0 z-50 border-b border-slate-100 bg-white/95 backdrop-blur">
@@ -33,7 +44,15 @@ export default function Navbar() {
           })}
         </div>
 
-        <div className="hidden lg:block">
+        <div className="hidden items-center gap-3 lg:flex">
+          {showAdmin ? (
+            <Link
+              href="/admin"
+              className="rounded-md border border-brand-200 bg-brand-50 px-4 py-2 text-sm font-semibold text-brand-700 hover:bg-brand-100"
+            >
+              Admin
+            </Link>
+          ) : null}
           <Link href="/login" className="btn-primary px-6 py-2.5">
             Login
           </Link>
@@ -67,6 +86,15 @@ export default function Navbar() {
                 {link.label}
               </Link>
             ))}
+            {showAdmin ? (
+              <Link
+                href="/admin"
+                onClick={() => setOpen(false)}
+                className="rounded-md border border-brand-200 bg-brand-50 px-3 py-2 text-sm font-semibold text-brand-700"
+              >
+                Admin panel
+              </Link>
+            ) : null}
             <Link href="/login" onClick={() => setOpen(false)} className="btn-primary mt-2">
               Login
             </Link>
