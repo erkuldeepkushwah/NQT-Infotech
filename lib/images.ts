@@ -72,6 +72,12 @@ export function img(seed: string, w: number, h: number): string {
     : "/img/" + seed + ".svg");
 }
 
+// Client logos for the logo carousel: public/logos/<slug>.svg
+export function logo(name: string): string {
+  const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+  return BASE + "/logos/" + slug + ".svg";
+}
+
 // Cut-out artwork (transparent PNG) such as the hero figure.
 export function png(name: string): string {
   return BASE + "/img/" + name + ".png";

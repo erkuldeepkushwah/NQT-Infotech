@@ -66,3 +66,29 @@ body {
     background-image: linear-gradient(115deg, #14245B 0%, #1A47A8 55%, #2166F3 100%);
   }
 }
+
+/* Infinite logo carousel. The row is rendered twice and the track slides by
+   half its width, so the loop never jumps. */
+@keyframes logo-marquee {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.logo-track {
+  animation: logo-marquee 30s linear infinite;
+  will-change: transform;
+}
+
+.logo-carousel:hover .logo-track {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .logo-track {
+    animation: none;
+  }
+}
