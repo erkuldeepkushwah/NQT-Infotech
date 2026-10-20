@@ -141,7 +141,7 @@ export default function HomePage() {
               to the size and goals of your organisation.
             </p>
             <div className="mt-8">
-              <img src={img("nqt-segments", 720, 460)} alt="Business solutions" className="w-full rounded-xl object-cover" />
+              <img src={img("nqt-segments", 720, 460)} alt="Business solutions" className="h-[240px] w-full rounded-xl object-cover" />
             </div>
           </div>
           <div className="space-y-5">
@@ -192,7 +192,7 @@ export default function HomePage() {
             </div>
           </div>
           <div className="relative">
-            <img src={img("nqt-benefits", 720, 720)} alt="IT consulting" className="w-full rounded-xl object-cover" />
+            <img src={img("nqt-benefits", 720, 720)} alt="IT consulting" className="h-[240px] w-full rounded-xl object-cover" />
             <div className="mt-6 rounded-xl border border-white/10 bg-white/5 p-6">
               <p className="text-sm leading-relaxed text-brand-100">
                 &ldquo;We started working with Brivora to make our systems
