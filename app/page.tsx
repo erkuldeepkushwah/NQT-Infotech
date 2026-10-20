@@ -27,7 +27,7 @@ export default function HomePage() {
       {/* Hero */}
       <section className="relative isolate overflow-hidden banner-bg">
         <div className="pointer-events-none absolute -right-32 -top-40 -z-10 h-[560px] w-[760px] rounded-full bg-brand-500/40 blur-3xl" />
-        <div className="container-x grid items-center gap-12 py-16 sm:py-24 lg:grid-cols-2">
+        <div className="container-x grid items-center gap-12 py-16 sm:py-24 lg:grid-cols-[55fr_45fr]">
           <div>
             <span className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-300">
               Let&apos;s make technology work for you
@@ -47,12 +47,14 @@ export default function HomePage() {
               </Link>
             </div>
           </div>
-          <div className="relative flex items-end justify-center lg:justify-end">
-            <div className="pointer-events-none absolute left-1/2 top-1/2 -z-10 h-[340px] w-[340px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-b from-white/35 to-brand-400/10 blur-3xl sm:h-[470px] sm:w-[470px]" />
+          {/* Figure: right-aligned, full height, never cropped. Sized by height so
+              the whole upper body and the laptop stay visible at every width. */}
+          <div className="relative flex items-center justify-center lg:justify-end">
+            <div className="pointer-events-none absolute left-1/2 top-1/2 -z-10 h-[320px] w-[320px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-b from-white/30 to-brand-400/10 blur-3xl sm:h-[430px] sm:w-[430px] lg:h-[560px] lg:w-[560px]" />
             <img
               src={png("brivora-hero")}
               alt="Brivora consultant working on a laptop"
-              className="w-[320px] drop-shadow-[0_28px_50px_rgba(2,10,35,0.6)] sm:w-[400px] lg:w-[470px]"
+              className="h-[340px] w-auto max-w-none object-contain drop-shadow-[0_28px_50px_rgba(2,10,35,0.6)] sm:h-[450px] lg:h-[560px]"
             />
           </div>
         </div>

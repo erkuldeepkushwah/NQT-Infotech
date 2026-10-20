@@ -60,7 +60,9 @@ body {
 }
 
 @layer utilities {
+  /* Hero backdrop: deep navy on the left (behind the copy) easing into royal
+     blue on the right (behind the figure). */
   .banner-bg {
-    background-image: linear-gradient(105deg, #040A1F 0%, #0A1740 42%, #0B4FE0 100%);
+    background-image: linear-gradient(115deg, #14245B 0%, #1A47A8 55%, #2166F3 100%);
   }
 }
