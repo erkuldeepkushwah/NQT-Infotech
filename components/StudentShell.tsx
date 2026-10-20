@@ -7,13 +7,54 @@ import { onAuthStateChanged, signOut, type User } from "firebase/auth";
 import { auth, isFirebaseConfigured } from "@/lib/firebase";
 import { isAdminEmail } from "@/lib/admin";
 import Logo from "@/components/Logo";
+import Footer from "@/components/Footer";
 
-const NAV = [
-  { label: "Dashboard", href: "/dashboard" },
-  { label: "My Courses", href: "/dashboard/courses" },
-  { label: "Browse Courses", href: "/courses" },
-  { label: "Profile", href: "/dashboard/profile" },
+type NavItem = { label: string; href: string; icon: string };
+
+const MAIN_NAV: NavItem[] = [
+  { label: "Dashboard", href: "/dashboard", icon: "grid" },
+  { label: "My Courses", href: "/dashboard/courses", icon: "book" },
+  { label: "Browse Courses", href: "/courses", icon: "compass" },
+  { label: "Expert", href: "/dashboard/expert", icon: "star" },
+  { label: "Certificates", href: "/dashboard/certificates", icon: "award" },
+  { label: "Assignments", href: "/dashboard/assignments", icon: "clipboard" },
+  { label: "Quizzes", href: "/dashboard/quizzes", icon: "quiz" },
 ];
+
+const ACCOUNT_NAV: NavItem[] = [
+  { label: "Profile", href: "/dashboard/profile", icon: "user" },
+  { label: "Settings", href: "/dashboard/settings", icon: "gear" },
+];
+
+const PATHS: Record<string, string> = {
+  grid: "M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z",
+  book: "M5 4h11a2 2 0 0 1 2 2v14H7a2 2 0 0 1-2-2zM18 16H7",
+  compass: "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM15.5 8.5l-2 5-5 2 2-5z",
+  star: "M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z",
+  award: "M12 15a6 6 0 1 0 0-12 6 6 0 0 0 0 12zM8.5 13.5 7 21l5-3 5 3-1.5-7.5",
+  clipboard: "M9 4h6v3H9zM7 5H6a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1h-1",
+  quiz: "M9 5h6M5 9h14M5 14h9M5 19h6",
+  user: "M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21a8 8 0 0 1 16 0",
+  gear: "M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-2.7 1.1V21a2 2 0 1 1-4 0v-.1A1.6 1.6 0 0 0 7.5 19.4l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1A1.6 1.6 0 0 0 3.6 14H3a2 2 0 1 1 0-4h.1A1.6 1.6 0 0 0 4.6 7.5l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1A1.6 1.6 0 0 0 10 3.6V3a2 2 0 1 1 4 0v.1a1.6 1.6 0 0 0 2.5 1.5l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0 1.1 2.7H21a2 2 0 1 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1z",
+  logout: "M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9",
+};
+
+function NavIcon({ name, className }: { name: string; className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.7"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden="true"
+    >
+      <path d={PATHS[name] || PATHS.grid} />
+    </svg>
+  );
+}
 
 function initials(name: string): string {
   return name
@@ -77,9 +118,30 @@ export default function StudentShell({ children }: { children: React.ReactNode }
   }
 
   const displayName = user.displayName || user.email || "Student";
-  // Static export serves /dashboard/ with a trailing slash; normalise so the
-  // active nav item is still highlighted.
   const path = (pathname || "").replace(/\/+$/, "") || "/";
+
+  function isActive(href: string) {
+    if (href === "/courses") return path === "/courses";
+    return path === href || path.startsWith(href + "/");
+  }
+
+  function navLink(item: NavItem) {
+    const active = isActive(item.href);
+    return (
+      <Link
+        key={item.href}
+        href={item.href}
+        onClick={() => setOpen(false)}
+        className={
+          "flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition " +
+          (active ? "bg-brand-600 text-white" : "text-brand-100 hover:bg-white/10 hover:text-white")
+        }
+      >
+        <NavIcon name={item.icon} className="h-[18px] w-[18px] flex-none" />
+        {item.label}
+      </Link>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -137,54 +199,40 @@ export default function StudentShell({ children }: { children: React.ReactNode }
         {/* Dark sidebar, sitting below the top bar */}
         <aside
           className={
-            "fixed bottom-0 left-0 top-[68px] z-30 w-64 transform overflow-y-auto bg-navy-800 text-white transition-transform lg:static lg:translate-x-0 " +
+            "fixed bottom-0 left-0 top-[68px] z-30 flex w-64 transform flex-col overflow-y-auto bg-navy-800 text-white transition-transform lg:static lg:translate-x-0 " +
             (open ? "translate-x-0" : "-translate-x-full")
           }
         >
-          <nav className="py-5">
-            <p className="px-6 pb-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-brand-300">
+          <nav className="flex flex-1 flex-col px-3 py-5">
+            <p className="px-3 pb-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-brand-300">
               Main learning
             </p>
-            <div className="space-y-1 px-3">
-              {NAV.map((item) => {
-                const active = path === item.href || path.startsWith(item.href + "/");
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    onClick={() => setOpen(false)}
-                    className={
-                      "block rounded-md px-3 py-2.5 text-sm font-medium transition " +
-                      (active
-                        ? "bg-brand-600 text-white"
-                        : "text-brand-100 hover:bg-white/10 hover:text-white")
-                    }
-                  >
-                    {item.label}
-                  </Link>
-                );
-              })}
+            <div className="space-y-1">{MAIN_NAV.map(navLink)}</div>
 
-              {isAdminEmail(user.email) ? (
-                <Link
-                  href="/admin"
-                  onClick={() => setOpen(false)}
-                  className="block rounded-md border border-brand-400/40 px-3 py-2.5 text-sm font-medium text-brand-100 transition hover:bg-white/10 hover:text-white"
-                >
-                  Admin panel
-                </Link>
-              ) : null}
-            </div>
-
-            <div className="mt-6 px-3">
-              <button
-                type="button"
-                onClick={() => auth && signOut(auth)}
-                className="block w-full rounded-md px-3 py-2.5 text-left text-sm font-medium text-brand-100 transition hover:bg-white/10 hover:text-white"
+            {isAdminEmail(user.email) ? (
+              <Link
+                href="/admin"
+                onClick={() => setOpen(false)}
+                className="mt-2 flex items-center gap-3 rounded-md border border-brand-400/40 px-3 py-2.5 text-sm font-medium text-brand-100 transition hover:bg-white/10 hover:text-white"
               >
-                Logout
-              </button>
-            </div>
+                <NavIcon name="grid" className="h-[18px] w-[18px] flex-none" />
+                Admin panel
+              </Link>
+            ) : null}
+
+            <p className="px-3 pb-2 pt-6 text-[11px] font-semibold uppercase tracking-[0.18em] text-brand-300">
+              Account
+            </p>
+            <div className="space-y-1">{ACCOUNT_NAV.map(navLink)}</div>
+
+            <button
+              type="button"
+              onClick={() => auth && signOut(auth)}
+              className="mt-auto flex items-center gap-3 rounded-md px-3 py-2.5 text-left text-sm font-medium text-red-300 transition hover:bg-white/10 hover:text-red-200"
+            >
+              <NavIcon name="logout" className="h-[18px] w-[18px] flex-none" />
+              Logout
+            </button>
           </nav>
         </aside>
 
@@ -192,8 +240,10 @@ export default function StudentShell({ children }: { children: React.ReactNode }
           <div className="fixed inset-0 z-20 bg-black/40 lg:hidden" onClick={() => setOpen(false)} aria-hidden="true" />
         ) : null}
 
-        <main className="min-w-0 flex-1 px-5 py-7 sm:px-8">{children}</main>
+        <main className="min-w-0 flex-1 bg-white px-5 py-7 sm:px-8">{children}</main>
       </div>
+
+      <Footer />
     </div>
   );
 }
