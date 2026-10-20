@@ -26,7 +26,7 @@ export default function HomePage() {
       {/* Hero */}
       <section className="relative isolate overflow-hidden banner-bg">
         <div className="pointer-events-none absolute -right-32 -top-40 -z-10 h-[560px] w-[760px] rounded-full bg-brand-500/40 blur-3xl" />
-        <div className="container-x grid items-end gap-12 pt-16 sm:pt-24 lg:grid-cols-[55fr_45fr]">
+        <div className="container-x grid items-end gap-10 pt-16 sm:pt-24 lg:grid-cols-[52fr_48fr]">
           <div className="pb-16 sm:pb-24">
             <span className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-300">
               Let&apos;s make technology work for you
@@ -50,11 +50,11 @@ export default function HomePage() {
               it meets the blue band with no gap. Sized by height so the whole upper
               body and the laptop stay visible at every width. */}
           <div className="relative flex items-end justify-center lg:justify-end">
-            <div className="pointer-events-none absolute left-1/2 top-1/2 -z-10 h-[360px] w-[360px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-b from-white/30 to-brand-400/10 blur-3xl sm:h-[500px] sm:w-[500px] lg:h-[660px] lg:w-[660px]" />
+            <div className="pointer-events-none absolute left-1/2 top-1/2 -z-10 h-[400px] w-[400px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-b from-white/30 to-brand-400/10 blur-3xl sm:h-[560px] sm:w-[560px] lg:h-[740px] lg:w-[740px]" />
             <img
               src={png("brivora-hero")}
               alt="Brivora consultant working on a laptop"
-              className="h-[400px] w-auto max-w-none object-contain drop-shadow-[0_28px_50px_rgba(2,10,35,0.6)] sm:h-[520px] lg:h-[680px]"
+              className="h-[430px] w-auto max-w-none object-contain drop-shadow-[0_28px_50px_rgba(2,10,35,0.6)] sm:h-[580px] lg:h-[780px]"
             />
           </div>
         </div>
