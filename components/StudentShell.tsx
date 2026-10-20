@@ -121,6 +121,8 @@ export default function StudentShell({ children }: { children: React.ReactNode }
   const path = (pathname || "").replace(/\/+$/, "") || "/";
 
   function isActive(href: string) {
+    // Dashboard is only "current" on the dashboard itself, not on its sub-pages.
+    if (href === "/dashboard") return path === "/dashboard";
     return path === href || path.startsWith(href + "/");
   }
 
