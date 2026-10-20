@@ -1,8 +1,22 @@
+"use client";
+
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import { onAuthStateChanged } from "firebase/auth";
 import { img } from "@/lib/images";
+import { auth } from "@/lib/firebase";
 import type { Course } from "@/lib/site";
 
+// Prices are only shown to signed-in visitors; everyone else is invited to log
+// in. (This hides the price from the page - see the README for the caveat.)
 export default function CourseCard({ course }: { course: Course }) {
+  const [signedIn, setSignedIn] = useState(false);
+
+  useEffect(() => {
+    if (!auth) return;
+    return onAuthStateChanged(auth, (user) => setSignedIn(Boolean(user)));
+  }, []);
+
   return (
     <article className="card flex flex-col overflow-hidden">
       <div className="aspect-[16/9] overflow-hidden bg-slate-100">
@@ -27,12 +41,25 @@ export default function CourseCard({ course }: { course: Course }) {
           </div>
         </div>
 
-        <div className="mt-4 flex items-baseline gap-2">
-          <span className="text-xl font-extrabold text-navy-800">&#8377;{course.price}</span>
-          <span className="text-sm text-slate-400 line-through">&#8377;{course.oldPrice}</span>
-          <span className="rounded bg-green-50 px-2 py-0.5 text-xs font-semibold text-green-700">
-            {course.discount}
-          </span>
+        <div className="mt-4 flex min-h-[30px] flex-wrap items-baseline gap-2">
+          {signedIn ? (
+            <>
+              <span className="text-xl font-extrabold text-navy-800">&#8377;{course.price}</span>
+              <span className="text-sm text-slate-400 line-through">
+                &#8377;{course.oldPrice}
+              </span>
+              <span className="rounded bg-green-50 px-2 py-0.5 text-xs font-semibold text-green-700">
+                {course.discount}
+              </span>
+            </>
+          ) : (
+            <Link
+              href="/login"
+              className="text-sm font-semibold text-brand-600 hover:underline"
+            >
+              Log in to view pricing
+            </Link>
+          )}
         </div>
 
         <div className="mt-5 flex gap-3">
