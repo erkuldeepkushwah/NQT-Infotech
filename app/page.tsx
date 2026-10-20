@@ -48,11 +48,11 @@ export default function HomePage() {
             </div>
           </div>
           <div className="relative flex items-end justify-center lg:justify-end">
-            <div className="pointer-events-none absolute left-1/2 top-1/2 -z-10 h-[280px] w-[280px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-b from-white/35 to-brand-400/10 blur-3xl sm:h-[380px] sm:w-[380px]" />
+            <div className="pointer-events-none absolute left-1/2 top-1/2 -z-10 h-[340px] w-[340px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-b from-white/35 to-brand-400/10 blur-3xl sm:h-[470px] sm:w-[470px]" />
             <img
               src={png("brivora-hero")}
               alt="Brivora consultant working on a laptop"
-              className="w-[250px] drop-shadow-[0_28px_50px_rgba(2,10,35,0.6)] sm:w-[310px] lg:w-[360px]"
+              className="w-[320px] drop-shadow-[0_28px_50px_rgba(2,10,35,0.6)] sm:w-[400px] lg:w-[470px]"
             />
           </div>
         </div>
