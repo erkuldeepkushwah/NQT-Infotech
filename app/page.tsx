@@ -26,18 +26,18 @@ export default function HomePage() {
       {/* Hero */}
       <section className="relative isolate overflow-hidden banner-bg">
         <div className="pointer-events-none absolute -right-32 -top-40 -z-10 h-[560px] w-[760px] rounded-full bg-brand-500/40 blur-3xl" />
-        <div className="container-x grid items-end gap-10 pt-16 sm:pt-24 lg:grid-cols-[52fr_48fr]">
-          <div className="pb-16 sm:pb-24">
+        <div className="container-x grid items-center gap-6 pt-6 sm:pt-8 lg:min-h-[400px] lg:grid-cols-[55fr_45fr]">
+          <div className="pb-8 lg:pb-0">
             <span className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-300">
               Let&apos;s make technology work for you
             </span>
-            <h1 className="mt-4 text-4xl font-extrabold leading-tight tracking-tight text-white sm:text-5xl">
+            <h1 className="mt-3 text-3xl font-extrabold leading-tight tracking-tight text-white sm:text-4xl lg:text-[38px]">
               {site.tagline}
             </h1>
-            <p className="mt-5 max-w-xl text-base leading-relaxed text-brand-100 sm:text-lg">
+            <p className="mt-3 max-w-xl text-sm leading-relaxed text-brand-100 sm:text-base">
               {site.heroText}
             </p>
-            <div className="mt-8 flex flex-wrap gap-3">
+            <div className="mt-6 flex flex-wrap gap-3">
               <Link href="/services" className="btn bg-white text-brand-700 hover:bg-brand-50">
                 Discover services
               </Link>
@@ -46,15 +46,14 @@ export default function HomePage() {
               </Link>
             </div>
           </div>
-          {/* Figure: right-aligned and standing on the bottom edge of the banner so
-              it meets the blue band with no gap. Sized by height so the whole upper
-              body and the laptop stay visible at every width. */}
-          <div className="relative flex items-end justify-center lg:justify-end">
-            <div className="pointer-events-none absolute left-1/2 top-1/2 -z-10 h-[400px] w-[400px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-b from-white/30 to-brand-400/10 blur-3xl sm:h-[560px] sm:w-[560px] lg:h-[740px] lg:w-[740px]" />
+          {/* Figure: bottom-aligned so the body and laptop meet the bottom edge of
+              the blue banner with no gap, and sized by height so nothing is cropped. */}
+          <div className="relative flex justify-center self-end lg:justify-end">
+            <div className="pointer-events-none absolute bottom-0 left-1/2 -z-10 h-[260px] w-[260px] -translate-x-1/2 rounded-full bg-brand-300/25 blur-3xl sm:h-[340px] sm:w-[340px] lg:h-[410px] lg:w-[410px]" />
             <img
               src={png("brivora-hero")}
               alt="Brivora consultant working on a laptop"
-              className="h-[430px] w-auto max-w-none object-contain drop-shadow-[0_28px_50px_rgba(2,10,35,0.6)] sm:h-[580px] lg:h-[780px]"
+              className="h-[250px] w-auto max-w-none object-contain brightness-[1.06] contrast-[1.03] drop-shadow-[0_18px_34px_rgba(2,10,35,0.5)] sm:h-[320px] lg:h-[380px]"
             />
           </div>
         </div>
