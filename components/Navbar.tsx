@@ -21,9 +21,6 @@ export default function Navbar() {
 
   const signedIn = Boolean(user);
   const showAdmin = isAdminEmail(user?.email);
-  const dashboardHref = showAdmin ? "/admin" : "/dashboard";
-  const displayName =
-    user?.displayName || (user?.email || "").split("@")[0] || "My dashboard";
 
   // Once signed in, Courses opens inside the dashboard so the public chrome
   // (and the Login button) never appears to a logged-in user.
@@ -55,21 +52,15 @@ export default function Navbar() {
         </div>
 
         <div className="hidden items-center gap-3 lg:flex">
-          {signedIn ? (
-            <>
-              {showAdmin ? (
-                <Link
-                  href="/admin"
-                  className="rounded-md border border-brand-200 bg-brand-50 px-4 py-2 text-sm font-semibold text-brand-700 hover:bg-brand-100"
-                >
-                  Admin
-                </Link>
-              ) : null}
-              <Link href={dashboardHref} className="btn-primary px-5 py-2.5">
-                {displayName}
-              </Link>
-            </>
-          ) : (
+          {showAdmin ? (
+            <Link
+              href="/admin"
+              className="rounded-md border border-brand-200 bg-brand-50 px-4 py-2 text-sm font-semibold text-brand-700 hover:bg-brand-100"
+            >
+              Admin
+            </Link>
+          ) : null}
+          {signedIn ? null : (
             <Link href="/login" className="btn-primary px-6 py-2.5">
               Login
             </Link>
@@ -105,26 +96,16 @@ export default function Navbar() {
               </Link>
             ))}
 
-            {signedIn ? (
-              <>
-                {showAdmin ? (
-                  <Link
-                    href="/admin"
-                    onClick={() => setOpen(false)}
-                    className="rounded-md border border-brand-200 bg-brand-50 px-3 py-2 text-sm font-semibold text-brand-700"
-                  >
-                    Admin panel
-                  </Link>
-                ) : null}
-                <Link
-                  href={dashboardHref}
-                  onClick={() => setOpen(false)}
-                  className="btn-primary mt-2"
-                >
-                  {displayName}
-                </Link>
-              </>
-            ) : (
+            {showAdmin ? (
+              <Link
+                href="/admin"
+                onClick={() => setOpen(false)}
+                className="rounded-md border border-brand-200 bg-brand-50 px-3 py-2 text-sm font-semibold text-brand-700"
+              >
+                Admin panel
+              </Link>
+            ) : null}
+            {signedIn ? null : (
               <Link href="/login" onClick={() => setOpen(false)} className="btn-primary mt-2">
                 Login
               </Link>
