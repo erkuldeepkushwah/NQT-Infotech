@@ -18,7 +18,7 @@ type CourseRow = {
 };
 
 export default function BrowseCoursesPage() {
-  const { rows, loading } = useCollection<CourseRow>("courses", 100);
+  const { rows } = useCollection<CourseRow>("courses", 100);
 
   // Firestore courses win; otherwise show the catalogue built into the website.
   const catalogue: Course[] =
@@ -43,15 +43,12 @@ export default function BrowseCoursesPage() {
         Every course in the catalogue, with fees. Talk to us to enrol.
       </p>
 
-      {loading ? (
-        <p className="mt-6 text-sm text-slate-500">Loading courses...</p>
-      ) : (
-        <div className="mt-6 grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
-          {catalogue.map((course) => (
-            <CourseCard key={course.title} course={course} />
-          ))}
-        </div>
-      )}
+      {/* The catalogue renders straight away and is replaced once Firestore answers. */}
+      <div className="mt-6 grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+        {catalogue.map((course) => (
+          <CourseCard key={course.title} course={course} showPrice />
+        ))}
+      </div>
     </>
   );
 }

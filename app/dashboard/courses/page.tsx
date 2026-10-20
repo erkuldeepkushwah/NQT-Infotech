@@ -20,7 +20,7 @@ function toNumber(value: string): number {
 }
 
 export default function MyCoursesPage() {
-  const { rows, loading, error } = useCollection<Course>("courses", 100);
+  const { rows } = useCollection<Course>("courses", 100);
 
   // Fall back to the courses built into the website so the catalogue is never
   // empty for a signed-in student.
@@ -55,10 +55,8 @@ export default function MyCoursesPage() {
 
       <Panel title={"Course catalogue (" + courses.length + ")"}>
         <TableShell headers={["Course", "Category", "Level", "Duration", "Fee", ""]}>
-          {loading ? (
-            <EmptyRow colSpan={6} text="Loading courses..." />
-          ) : error ? (
-            <EmptyRow colSpan={6} text={error} />
+          {courses.length === 0 ? (
+            <EmptyRow colSpan={6} text="No courses are published yet. Please check back soon." />
           ) : (
             courses.map((c) => (
               <tr key={c.id} className="border-b border-slate-50 last:border-0">

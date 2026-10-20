@@ -9,16 +9,23 @@ import type { Course } from "@/lib/site";
 
 // Prices are only shown to signed-in visitors; everyone else is invited to log
 // in. (This hides the price from the page - see the README for the caveat.)
-export default function CourseCard({ course }: { course: Course }) {
-  const [signedIn, setSignedIn] = useState(false);
+export default function CourseCard({
+  course,
+  showPrice,
+}: {
+  course: Course;
+  // Inside the dashboard the visitor is already signed in, so prices are forced on.
+  showPrice?: boolean;
+}) {
+  const [signedIn, setSignedIn] = useState(Boolean(showPrice));
 
   useEffect(() => {
-    if (!auth) return;
+    if (showPrice || !auth) return;
     return onAuthStateChanged(auth, (user) => setSignedIn(Boolean(user)));
-  }, []);
+  }, [showPrice]);
 
   // Signed-in visitors stay inside the dashboard; everyone else gets the public page.
-  const detailsHref = signedIn ? "/dashboard/browse" : "/courses";
+  const detailsHref = signedIn || showPrice ? "/dashboard/browse" : "/courses";
 
   return (
     <article className="card flex flex-col overflow-hidden">
@@ -45,7 +52,7 @@ export default function CourseCard({ course }: { course: Course }) {
         </div>
 
         <div className="mt-4 flex min-h-[30px] flex-wrap items-baseline gap-2">
-          {signedIn ? (
+          {signedIn || showPrice ? (
             <>
               <span className="text-xl font-extrabold text-navy-800">&#8377;{course.price}</span>
               <span className="text-sm text-slate-400 line-through">
