@@ -14,7 +14,7 @@ type NavItem = { label: string; href: string; icon: string };
 const MAIN_NAV: NavItem[] = [
   { label: "Dashboard", href: "/dashboard", icon: "grid" },
   { label: "My Courses", href: "/dashboard/courses", icon: "book" },
-  { label: "Browse Courses", href: "/courses", icon: "compass" },
+  { label: "Browse Courses", href: "/dashboard/browse", icon: "compass" },
   { label: "Expert", href: "/dashboard/expert", icon: "star" },
   { label: "Certificates", href: "/dashboard/certificates", icon: "award" },
   { label: "Assignments", href: "/dashboard/assignments", icon: "clipboard" },
@@ -121,7 +121,6 @@ export default function StudentShell({ children }: { children: React.ReactNode }
   const path = (pathname || "").replace(/\/+$/, "") || "/";
 
   function isActive(href: string) {
-    if (href === "/courses") return path === "/courses";
     return path === href || path.startsWith(href + "/");
   }
 
@@ -145,8 +144,8 @@ export default function StudentShell({ children }: { children: React.ReactNode }
 
   return (
     <div className="min-h-screen bg-slate-50">
-      {/* Full-width white top bar carrying the brand */}
-      <header className="sticky top-0 z-40 flex h-[68px] items-center justify-between border-b border-slate-200 bg-white px-4 sm:px-6">
+      {/* Fixed top bar carrying the brand */}
+      <header className="fixed inset-x-0 top-0 z-40 flex h-[68px] items-center justify-between border-b border-slate-200 bg-white px-4 sm:px-6">
         <div className="flex items-center gap-3">
           <button
             type="button"
@@ -195,55 +194,55 @@ export default function StudentShell({ children }: { children: React.ReactNode }
         </div>
       </header>
 
-      <div className="flex">
-        {/* Dark sidebar, sitting below the top bar */}
-        <aside
-          className={
-            "fixed bottom-0 left-0 top-[68px] z-30 flex w-64 transform flex-col overflow-y-auto bg-navy-800 text-white transition-transform lg:static lg:translate-x-0 " +
-            (open ? "translate-x-0" : "-translate-x-full")
-          }
-        >
-          <nav className="flex flex-1 flex-col px-3 py-5">
-            <p className="px-3 pb-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-brand-300">
-              Main learning
-            </p>
-            <div className="space-y-1">{MAIN_NAV.map(navLink)}</div>
+      {/* Sidebar: fixed and full height, so it stays visible on every page */}
+      <aside
+        className={
+          "fixed bottom-0 left-0 top-[68px] z-30 flex w-64 transform flex-col overflow-y-auto bg-navy-800 text-white transition-transform lg:translate-x-0 " +
+          (open ? "translate-x-0" : "-translate-x-full")
+        }
+      >
+        <nav className="flex flex-1 flex-col px-3 py-5">
+          <p className="px-3 pb-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-brand-300">
+            Main learning
+          </p>
+          <div className="space-y-1">{MAIN_NAV.map(navLink)}</div>
 
-            {isAdminEmail(user.email) ? (
-              <Link
-                href="/admin"
-                onClick={() => setOpen(false)}
-                className="mt-2 flex items-center gap-3 rounded-md border border-brand-400/40 px-3 py-2.5 text-sm font-medium text-brand-100 transition hover:bg-white/10 hover:text-white"
-              >
-                <NavIcon name="grid" className="h-[18px] w-[18px] flex-none" />
-                Admin panel
-              </Link>
-            ) : null}
-
-            <p className="px-3 pb-2 pt-6 text-[11px] font-semibold uppercase tracking-[0.18em] text-brand-300">
-              Account
-            </p>
-            <div className="space-y-1">{ACCOUNT_NAV.map(navLink)}</div>
-
-            <button
-              type="button"
-              onClick={() => auth && signOut(auth)}
-              className="mt-auto flex items-center gap-3 rounded-md px-3 py-2.5 text-left text-sm font-medium text-red-300 transition hover:bg-white/10 hover:text-red-200"
+          {isAdminEmail(user.email) ? (
+            <Link
+              href="/admin"
+              onClick={() => setOpen(false)}
+              className="mt-2 flex items-center gap-3 rounded-md border border-brand-400/40 px-3 py-2.5 text-sm font-medium text-brand-100 transition hover:bg-white/10 hover:text-white"
             >
-              <NavIcon name="logout" className="h-[18px] w-[18px] flex-none" />
-              Logout
-            </button>
-          </nav>
-        </aside>
+              <NavIcon name="grid" className="h-[18px] w-[18px] flex-none" />
+              Admin panel
+            </Link>
+          ) : null}
 
-        {open ? (
-          <div className="fixed inset-0 z-20 bg-black/40 lg:hidden" onClick={() => setOpen(false)} aria-hidden="true" />
-        ) : null}
+          <p className="px-3 pb-2 pt-6 text-[11px] font-semibold uppercase tracking-[0.18em] text-brand-300">
+            Account
+          </p>
+          <div className="space-y-1">{ACCOUNT_NAV.map(navLink)}</div>
 
-        <main className="min-w-0 flex-1 bg-white px-5 py-7 sm:px-8">{children}</main>
+          <button
+            type="button"
+            onClick={() => auth && signOut(auth)}
+            className="mt-auto flex items-center gap-3 rounded-md px-3 py-2.5 pt-8 text-left text-sm font-medium text-red-300 transition hover:bg-white/10 hover:text-red-200"
+          >
+            <NavIcon name="logout" className="h-[18px] w-[18px] flex-none" />
+            Logout
+          </button>
+        </nav>
+      </aside>
+
+      {open ? (
+        <div className="fixed inset-0 z-20 bg-black/40 lg:hidden" onClick={() => setOpen(false)} aria-hidden="true" />
+      ) : null}
+
+      {/* Content sits beside the sidebar, so the footer never runs under it */}
+      <div className="pt-[68px] lg:pl-64">
+        <main className="min-h-[calc(100vh-68px)] bg-white px-5 py-7 sm:px-8">{children}</main>
+        <Footer />
       </div>
-
-      <Footer />
     </div>
   );
 }

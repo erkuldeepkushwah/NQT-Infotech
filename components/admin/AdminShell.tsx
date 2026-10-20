@@ -159,8 +159,8 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
 
   return (
     <div className="min-h-screen bg-slate-50">
-      {/* Full-width white top bar carrying the brand */}
-      <header className="sticky top-0 z-40 flex h-[68px] items-center justify-between border-b border-slate-200 bg-white px-4 sm:px-6">
+      {/* Fixed top bar carrying the brand */}
+      <header className="fixed inset-x-0 top-0 z-40 flex h-[68px] items-center justify-between border-b border-slate-200 bg-white px-4 sm:px-6">
         <div className="flex items-center gap-3">
           <button type="button" aria-label="Toggle menu" onClick={() => setOpen((v) => !v)}
             className="inline-flex h-10 w-10 items-center justify-center rounded-md border border-slate-200 lg:hidden">
@@ -201,80 +201,81 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
         </div>
       </header>
 
-      <div className="flex">
-        <aside
-          className={
-            "fixed bottom-0 left-0 top-[68px] z-30 flex w-64 transform flex-col overflow-y-auto bg-navy-800 text-white transition-transform lg:static lg:translate-x-0 " +
-            (open ? "translate-x-0" : "-translate-x-full")
-          }
-        >
-          <nav className="flex flex-1 flex-col px-3 py-4">
-            <div className="space-y-1">
-              {NAV.map((item) => {
-                const active = isActive(item.href);
-                const isOpen = expanded === item.href;
+      {/* Sidebar: fixed and full height, so it stays visible on every page */}
+      <aside
+        className={
+          "fixed bottom-0 left-0 top-[68px] z-30 flex w-64 transform flex-col overflow-y-auto bg-navy-800 text-white transition-transform lg:translate-x-0 " +
+          (open ? "translate-x-0" : "-translate-x-full")
+        }
+      >
+        <nav className="flex flex-1 flex-col px-3 py-4">
+          <div className="space-y-1">
+            {NAV.map((item) => {
+              const active = isActive(item.href);
+              const isOpen = expanded === item.href;
 
-                if (!item.children) {
-                  return (
-                    <Link key={item.href} href={item.href} onClick={() => setOpen(false)}
-                      className={"flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition " +
-                        (active ? "bg-brand-600 text-white" : "text-brand-100 hover:bg-white/10 hover:text-white")}>
-                      <NavIcon name={item.icon} className="h-[18px] w-[18px] flex-none" />
-                      {item.label}
-                    </Link>
-                  );
-                }
-
+              if (!item.children) {
                 return (
-                  <div key={item.href}>
-                    <button
-                      type="button"
-                      onClick={() => setExpanded(isOpen ? null : item.href)}
-                      className={"flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition " +
-                        (active ? "bg-brand-600 text-white" : "text-brand-100 hover:bg-white/10 hover:text-white")}
-                    >
-                      <NavIcon name={item.icon} className="h-[18px] w-[18px] flex-none" />
-                      <span className="flex-1 text-left">{item.label}</span>
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                        strokeWidth="2.5" className={isOpen ? "rotate-90 transition-transform" : "transition-transform"}
-                        aria-hidden="true">
-                        <path d="M9 6l6 6-6 6" strokeLinecap="round" strokeLinejoin="round" />
-                      </svg>
-                    </button>
-                    {isOpen ? (
-                      <div className="mt-1 space-y-1 border-l border-white/15 pl-4">
-                        {item.children.map((child) => (
-                          <Link key={child.href} href={child.href} onClick={() => setOpen(false)}
-                            className={"block rounded-md px-3 py-2 text-[13px] transition " +
-                              (path === child.href
-                                ? "bg-white/15 font-semibold text-white"
-                                : "text-brand-100 hover:bg-white/10 hover:text-white")}>
-                            {child.label}
-                          </Link>
-                        ))}
-                      </div>
-                    ) : null}
-                  </div>
+                  <Link key={item.href} href={item.href} onClick={() => setOpen(false)}
+                    className={"flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition " +
+                      (active ? "bg-brand-600 text-white" : "text-brand-100 hover:bg-white/10 hover:text-white")}>
+                    <NavIcon name={item.icon} className="h-[18px] w-[18px] flex-none" />
+                    {item.label}
+                  </Link>
                 );
-              })}
-            </div>
+              }
 
-            <button type="button" onClick={() => auth && signOut(auth)}
-              className="mt-auto flex items-center gap-3 rounded-md px-3 py-2.5 text-left text-sm font-medium text-red-300 transition hover:bg-white/10 hover:text-red-200">
-              <NavIcon name="logout" className="h-[18px] w-[18px] flex-none" />
-              Logout
-            </button>
-          </nav>
-        </aside>
+              return (
+                <div key={item.href}>
+                  <button
+                    type="button"
+                    onClick={() => setExpanded(isOpen ? null : item.href)}
+                    className={"flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition " +
+                      (active ? "bg-brand-600 text-white" : "text-brand-100 hover:bg-white/10 hover:text-white")}
+                  >
+                    <NavIcon name={item.icon} className="h-[18px] w-[18px] flex-none" />
+                    <span className="flex-1 text-left">{item.label}</span>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                      strokeWidth="2.5" className={isOpen ? "rotate-90 transition-transform" : "transition-transform"}
+                      aria-hidden="true">
+                      <path d="M9 6l6 6-6 6" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </button>
+                  {isOpen ? (
+                    <div className="mt-1 space-y-1 border-l border-white/15 pl-4">
+                      {item.children.map((child) => (
+                        <Link key={child.href} href={child.href} onClick={() => setOpen(false)}
+                          className={"block rounded-md px-3 py-2 text-[13px] transition " +
+                            (path === child.href
+                              ? "bg-white/15 font-semibold text-white"
+                              : "text-brand-100 hover:bg-white/10 hover:text-white")}>
+                          {child.label}
+                        </Link>
+                      ))}
+                    </div>
+                  ) : null}
+                </div>
+              );
+            })}
+          </div>
 
-        {open ? (
-          <div className="fixed inset-0 z-20 bg-black/40 lg:hidden" onClick={() => setOpen(false)} aria-hidden="true" />
-        ) : null}
+          <button type="button" onClick={() => auth && signOut(auth)}
+            className="mt-auto flex items-center gap-3 rounded-md px-3 py-2.5 pt-8 text-left text-sm font-medium text-red-300 transition hover:bg-white/10 hover:text-red-200">
+            <NavIcon name="logout" className="h-[18px] w-[18px] flex-none" />
+            Logout
+          </button>
+        </nav>
+      </aside>
 
-        <main className="min-w-0 flex-1 bg-white px-5 py-7 sm:px-8">{children}</main>
+      {open ? (
+        <div className="fixed inset-0 z-20 bg-black/40 lg:hidden" onClick={() => setOpen(false)} aria-hidden="true" />
+      ) : null}
+
+      {/* Content sits beside the sidebar, so the footer never runs under it */}
+      <div className="pt-[68px] lg:pl-64">
+        <main className="min-h-[calc(100vh-68px)] bg-white px-5 py-7 sm:px-8">{children}</main>
+        <Footer />
       </div>
-
-      <Footer />
     </div>
   );
 }
