@@ -17,6 +17,9 @@ export default function CourseCard({ course }: { course: Course }) {
     return onAuthStateChanged(auth, (user) => setSignedIn(Boolean(user)));
   }, []);
 
+  // Signed-in visitors stay inside the dashboard; everyone else gets the public page.
+  const detailsHref = signedIn ? "/dashboard/browse" : "/courses";
+
   return (
     <article className="card flex flex-col overflow-hidden">
       <div className="aspect-[16/9] overflow-hidden bg-slate-100">
@@ -63,7 +66,7 @@ export default function CourseCard({ course }: { course: Course }) {
         </div>
 
         <div className="mt-5 flex gap-3">
-          <Link href="/courses" className="btn-ghost flex-1 py-2.5">
+          <Link href={detailsHref} className="btn-ghost flex-1 py-2.5">
             View Details
           </Link>
           <Link href="/contact" className="btn-primary flex-1 py-2.5">

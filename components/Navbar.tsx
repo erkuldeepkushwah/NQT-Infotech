@@ -19,7 +19,17 @@ export default function Navbar() {
     return onAuthStateChanged(auth, setUser);
   }, []);
 
+  const signedIn = Boolean(user);
   const showAdmin = isAdminEmail(user?.email);
+  const dashboardHref = showAdmin ? "/admin" : "/dashboard";
+  const displayName =
+    user?.displayName || (user?.email || "").split("@")[0] || "My dashboard";
+
+  // Once signed in, Courses opens inside the dashboard so the public chrome
+  // (and the Login button) never appears to a logged-in user.
+  const links = navLinks.map((link) =>
+    signedIn && link.href === "/courses" ? { ...link, href: "/dashboard/browse" } : link
+  );
 
   return (
     <header className="sticky top-0 z-50 border-b border-slate-100 bg-white/95 backdrop-blur">
@@ -27,11 +37,11 @@ export default function Navbar() {
         <Logo />
 
         <div className="hidden items-center gap-7 lg:flex">
-          {navLinks.map((link) => {
+          {links.map((link) => {
             const active = pathname === link.href;
             return (
               <Link
-                key={link.href}
+                key={link.label}
                 href={link.href}
                 className={
                   "text-sm font-medium transition hover:text-brand-600 " +
@@ -45,17 +55,25 @@ export default function Navbar() {
         </div>
 
         <div className="hidden items-center gap-3 lg:flex">
-          {showAdmin ? (
-            <Link
-              href="/admin"
-              className="rounded-md border border-brand-200 bg-brand-50 px-4 py-2 text-sm font-semibold text-brand-700 hover:bg-brand-100"
-            >
-              Admin
+          {signedIn ? (
+            <>
+              {showAdmin ? (
+                <Link
+                  href="/admin"
+                  className="rounded-md border border-brand-200 bg-brand-50 px-4 py-2 text-sm font-semibold text-brand-700 hover:bg-brand-100"
+                >
+                  Admin
+                </Link>
+              ) : null}
+              <Link href={dashboardHref} className="btn-primary px-5 py-2.5">
+                {displayName}
+              </Link>
+            </>
+          ) : (
+            <Link href="/login" className="btn-primary px-6 py-2.5">
+              Login
             </Link>
-          ) : null}
-          <Link href="/login" className="btn-primary px-6 py-2.5">
-            Login
-          </Link>
+          )}
         </div>
 
         <button
@@ -76,9 +94,9 @@ export default function Navbar() {
       {open && (
         <div className="border-t border-slate-100 bg-white lg:hidden">
           <div className="container-x flex flex-col gap-1 py-4">
-            {navLinks.map((link) => (
+            {links.map((link) => (
               <Link
-                key={link.href}
+                key={link.label}
                 href={link.href}
                 onClick={() => setOpen(false)}
                 className="rounded-md px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
@@ -86,18 +104,31 @@ export default function Navbar() {
                 {link.label}
               </Link>
             ))}
-            {showAdmin ? (
-              <Link
-                href="/admin"
-                onClick={() => setOpen(false)}
-                className="rounded-md border border-brand-200 bg-brand-50 px-3 py-2 text-sm font-semibold text-brand-700"
-              >
-                Admin panel
+
+            {signedIn ? (
+              <>
+                {showAdmin ? (
+                  <Link
+                    href="/admin"
+                    onClick={() => setOpen(false)}
+                    className="rounded-md border border-brand-200 bg-brand-50 px-3 py-2 text-sm font-semibold text-brand-700"
+                  >
+                    Admin panel
+                  </Link>
+                ) : null}
+                <Link
+                  href={dashboardHref}
+                  onClick={() => setOpen(false)}
+                  className="btn-primary mt-2"
+                >
+                  {displayName}
+                </Link>
+              </>
+            ) : (
+              <Link href="/login" onClick={() => setOpen(false)} className="btn-primary mt-2">
+                Login
               </Link>
-            ) : null}
-            <Link href="/login" onClick={() => setOpen(false)} className="btn-primary mt-2">
-              Login
-            </Link>
+            )}
           </div>
         </div>
       )}
