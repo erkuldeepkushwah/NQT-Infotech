@@ -12,7 +12,6 @@ import {
   aboutBullets,
   benefits,
   blogPosts,
-  features,
   segments,
   services,
   site,
@@ -56,22 +55,6 @@ export default function HomePage() {
               alt="Brivora consultant working on a laptop"
               className="h-[340px] w-auto max-w-none object-contain drop-shadow-[0_28px_50px_rgba(2,10,35,0.6)] sm:h-[450px] lg:h-[560px]"
             />
-          </div>
-        </div>
-      </section>
-
-      {/* Feature strip */}
-      <section className="relative z-10 -mt-10">
-        <div className="container-x">
-          <div className="grid gap-6 rounded-xl border border-slate-100 bg-white px-8 py-8 shadow-card sm:grid-cols-2 lg:grid-cols-4">
-            {features.map((feature) => (
-              <div key={feature.title} className="flex items-center gap-4">
-                <span className="flex h-11 w-11 flex-none items-center justify-center rounded-md bg-brand-50 text-brand-600">
-                  <Icon name={feature.icon} className="h-5 w-5" />
-                </span>
-                <span className="text-sm font-semibold text-navy-800">{feature.title}</span>
-              </div>
-            ))}
           </div>
         </div>
       </section>
