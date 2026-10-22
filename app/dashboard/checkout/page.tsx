@@ -170,12 +170,12 @@ function Checkout() {
           <li className="text-slate-400">3. Instant Access</li>
         </ol>
         <div className="flex items-center gap-3">
-          <span className="rounded-md border border-amber-300 bg-amber-50 px-3 py-1.5 text-xs font-semibold text-amber-700">
+          <span className="rounded-md border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-900">
             ⏱ TIME {clock}
           </span>
           <Link
             href="/dashboard/browse"
-            className="rounded-md border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-700 hover:border-slate-300"
+            className="rounded-md border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-900 hover:border-slate-400"
           >
             ✕ Close
           </Link>
@@ -228,15 +228,15 @@ function Checkout() {
             </div>
             <div>
               <p className="text-base font-semibold text-navy-800">Scan with any UPI App</p>
-              <p className="mt-1 text-sm text-slate-600">GPay · PhonePe · Paytm · CRED</p>
+              <p className="mt-1 text-sm text-slate-900">GPay · PhonePe · Paytm · CRED</p>
 
               <div className="mt-5 flex items-center gap-3 rounded-md border border-slate-200 px-3 py-2.5">
-                <span className="text-xs text-slate-500">UPI ID</span>
+                <span className="text-xs text-slate-900">UPI ID</span>
                 <span className="flex-1 text-sm font-semibold text-slate-900">{UPI_ID}</span>
                 <button
                   type="button"
                   onClick={copyUpi}
-                  className="rounded-md border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-700 hover:border-brand-300 hover:text-brand-700"
+                  className="rounded-md border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-900 hover:border-slate-400"
                 >
                   {copied ? "Copied" : "Copy"}
                 </button>
@@ -275,12 +275,14 @@ function Checkout() {
             </p>
           ) : null}
 
-          <button type="submit" disabled={status === "saving"} className="btn-primary mt-5 w-[440px] py-3 disabled:opacity-60">
-            <Lock />
-            {status === "saving" ? "Submitting..." : "Pay " + rupees(price) + " Securely →"}
-          </button>
+          <div className="mt-5 flex justify-center">
+            <button type="submit" disabled={status === "saving"} className="btn-primary w-[440px] py-3 disabled:opacity-60">
+              <Lock />
+              {status === "saving" ? "Submitting..." : "Pay " + rupees(price) + " Securely →"}
+            </button>
+          </div>
 
-          <div className="mt-4 grid grid-cols-3 gap-2 text-[11px] font-medium text-slate-500">
+          <div className="mt-4 grid grid-cols-3 gap-2 text-[11px] font-medium text-slate-900">
             <span className="rounded-md border border-slate-200 px-3 py-2 text-center">◷ 7-Day Guarantee</span>
             <span className="rounded-md border border-slate-200 px-3 py-2 text-center">✓ Admin Verified</span>
             <span className="rounded-md border border-slate-200 px-3 py-2 text-center">⚡ Instant Access</span>
@@ -296,36 +298,36 @@ function Checkout() {
           />
           <div className="p-6">
             <h2 className="text-lg font-bold text-navy-800">{course.title}</h2>
-            <p className="mt-1 text-xs text-slate-500">
+            <p className="mt-1 text-xs text-slate-900">
               {course.category} • {course.duration}
             </p>
 
             <dl className="mt-6 space-y-3 border-t border-dashed border-slate-200 pt-5 text-sm">
               <div className="flex items-center justify-between">
-                <dt className="text-slate-600">Course Fee</dt>
-                <dd className="text-slate-400 line-through">{rupees(oldPrice)}</dd>
+                <dt className="text-slate-900">Course Fee</dt>
+                <dd className="text-slate-900 line-through">{rupees(oldPrice)}</dd>
               </div>
               <div className="flex items-center justify-between">
-                <dt className="text-slate-600">Discount</dt>
-                <dd className="font-medium text-green-600">- {rupees(discount)}</dd>
+                <dt className="text-slate-900">Discount</dt>
+                <dd className="font-medium text-slate-900">- {rupees(discount)}</dd>
               </div>
               <div className="flex items-center justify-between border-t border-slate-200 pt-4">
-                <dt className="text-xs font-semibold uppercase tracking-wide text-slate-700">
+                <dt className="text-xs font-semibold uppercase tracking-wide text-slate-900">
                   Total amount to pay
                 </dt>
-                <dd className="text-2xl font-extrabold text-brand-600">{rupees(price)}</dd>
+                <dd className="text-2xl font-extrabold text-slate-900">{rupees(price)}</dd>
               </div>
             </dl>
 
             <div className="mt-6 border-t border-slate-200 pt-5 text-sm">
               <p className="font-semibold text-slate-900">Need assistance?</p>
-              <p className="mt-2 text-slate-600">
+              <p className="mt-2 text-slate-900">
                 Call:{" "}
-                <a href={"tel:" + SUPPORT_PHONE} className="font-semibold text-brand-600 hover:underline">
+                <a href={"tel:" + SUPPORT_PHONE} className="font-semibold text-slate-900 hover:underline">
                   {SUPPORT_PHONE}
                 </a>
               </p>
-              <p className="text-slate-600">
+              <p className="text-slate-900">
                 <a href={"mailto:" + SUPPORT_EMAIL} className="hover:underline">
                   {SUPPORT_EMAIL}
                 </a>
