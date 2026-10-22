@@ -8,7 +8,7 @@ export default function LogoStrip() {
 
   return (
     <div className="logo-carousel relative overflow-hidden">
-      <div className="logo-track flex w-max items-center gap-14 sm:gap-20">
+      <div className="logo-track flex w-max items-center gap-12 sm:gap-16">
         {track.map((name, index) => (
           <img
             key={name + "-" + index}
@@ -18,7 +18,7 @@ export default function LogoStrip() {
             height={48}
             loading="lazy"
             aria-hidden={index >= clientLogos.length}
-            className="h-7 w-auto flex-none opacity-55 grayscale transition duration-300 hover:opacity-100 sm:h-8"
+            className="h-9 w-auto flex-none object-contain opacity-70 grayscale transition duration-300 hover:opacity-100 sm:h-11"
           />
         ))}
       </div>
