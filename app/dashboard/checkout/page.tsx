@@ -146,9 +146,11 @@ function Checkout() {
 
   return (
     <>
+      {/* The payment UI keeps one fixed desktop layout at every screen size. */}
+      <div className="min-w-[880px]">
       {/* Stepper + timer */}
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <ol className="flex flex-wrap items-center gap-x-3 gap-y-2 text-sm">
+      <div className="flex items-center justify-between gap-4">
+        <ol className="flex items-center gap-x-3 text-sm">
           <li className="flex items-center gap-2 font-semibold text-slate-900">
             <span className="flex h-5 w-5 items-center justify-center rounded-full bg-green-500 text-white">
               <Tick />
@@ -173,12 +175,12 @@ function Checkout() {
         </div>
       </div>
 
-      <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_400px]">
+      <div className="mt-6 grid grid-cols-[1fr_400px] gap-6">
         {/* Payment panel */}
-        <form onSubmit={submit} className="rounded-xl border border-slate-200 bg-white p-6 sm:p-7">
+        <form onSubmit={submit} className="rounded-xl border border-slate-200 bg-white p-7">
           <h1 className="text-xl font-bold text-navy-800">Complete your Payment</h1>
 
-          <div className="mt-5 grid gap-3 sm:grid-cols-2">
+          <div className="mt-5 grid grid-cols-2 gap-3">
             <button
               type="button"
               onClick={() => setTab("upi")}
@@ -207,7 +209,7 @@ function Checkout() {
             </button>
           </div>
 
-          <div className="mt-6 grid gap-6 sm:grid-cols-[200px_1fr]">
+          <div className="mt-6 grid grid-cols-[200px_1fr] gap-6">
             <div className="rounded-lg border border-slate-200 p-3">
               <img
                 src={(process.env.NEXT_PUBLIC_BASE_PATH || "") + "/qr/" + slugify(course.title) + ".png"}
@@ -268,7 +270,7 @@ function Checkout() {
             {status === "saving" ? "Submitting..." : "Pay " + rupees(price) + " Securely →"}
           </button>
 
-          <div className="mt-4 grid gap-2 text-[11px] font-medium text-slate-500 sm:grid-cols-3">
+          <div className="mt-4 grid grid-cols-3 gap-2 text-[11px] font-medium text-slate-500">
             <span className="rounded-md border border-slate-200 px-3 py-2 text-center">◷ 7-Day Guarantee</span>
             <span className="rounded-md border border-slate-200 px-3 py-2 text-center">✓ Admin Verified</span>
             <span className="rounded-md border border-slate-200 px-3 py-2 text-center">⚡ Instant Access</span>
@@ -321,6 +323,7 @@ function Checkout() {
             </div>
           </div>
         </aside>
+      </div>
       </div>
     </>
   );
