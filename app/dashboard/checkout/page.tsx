@@ -98,11 +98,18 @@ function Checkout() {
       setMessage("Enter the 6 or 12 digit UTR / reference number from your UPI app.");
       return;
     }
+    if (!user) {
+      setStatus("error");
+      setMessage("Please sign in again before paying.");
+      return;
+    }
     setStatus("saving");
     setMessage("");
     try {
       if (db) {
         await addDoc(collection(db, "payments"), {
+          // firestore.rules requires the writer's uid on every payment.
+          uid: user?.uid || "",
           studentName: user?.displayName || user?.email || "",
           studentEmail: user?.email || "",
           courseTitle: course.title,
@@ -147,7 +154,7 @@ function Checkout() {
   return (
     <>
       {/* The payment UI keeps one fixed desktop layout at every screen size. */}
-      <div className="min-w-[880px]">
+      <div className="min-w-[960px]">
       {/* Stepper + timer */}
       <div className="flex items-center justify-between gap-4">
         <ol className="flex items-center gap-x-3 text-sm">
@@ -243,21 +250,24 @@ function Checkout() {
             </div>
           </div>
 
-          <label htmlFor="utr" className="field-label mt-6 block">
-            UTR / Transaction Reference Number (Last 6 digits)
-          </label>
-          <input
-            id="utr"
-            name="utr"
-            inputMode="numeric"
-            value={utr}
-            onChange={(e) => setUtr(e.target.value)}
-            className="field"
-            aria-describedby="utr-help"
-          />
-          <p id="utr-help" className="mt-1.5 text-xs text-slate-500">
-            Enter the 6 or 12 digit UTR / Ref Number from your payment app.
-          </p>
+          {/* Fixed-width so the field never stretches or squeezes with the panel. */}
+          <div className="mt-6 w-[440px]">
+            <label htmlFor="utr" className="field-label block">
+              UTR / Transaction Reference Number (Last 6 digits)
+            </label>
+            <input
+              id="utr"
+              name="utr"
+              inputMode="numeric"
+              value={utr}
+              onChange={(e) => setUtr(e.target.value)}
+              className="field"
+              aria-describedby="utr-help"
+            />
+            <p id="utr-help" className="mt-1.5 text-xs text-slate-500">
+              Enter the 6 or 12 digit UTR / Ref Number from your payment app.
+            </p>
+          </div>
 
           {status === "error" && message ? (
             <p role="alert" className="mt-4 rounded-md bg-red-50 px-4 py-3 text-sm text-red-700">
@@ -265,7 +275,7 @@ function Checkout() {
             </p>
           ) : null}
 
-          <button type="submit" disabled={status === "saving"} className="btn-primary mt-5 w-full py-3 disabled:opacity-60">
+          <button type="submit" disabled={status === "saving"} className="btn-primary mt-5 w-[440px] py-3 disabled:opacity-60">
             <Lock />
             {status === "saving" ? "Submitting..." : "Pay " + rupees(price) + " Securely →"}
           </button>
