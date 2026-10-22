@@ -7,6 +7,10 @@ import { img } from "@/lib/images";
 import { auth } from "@/lib/firebase";
 import type { Course } from "@/lib/site";
 
+function slugify(value: string): string {
+  return value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+}
+
 // Prices are only shown to signed-in visitors; everyone else is invited to log
 // in. (This hides the price from the page - see the README for the caveat.)
 export default function CourseCard({
@@ -25,7 +29,11 @@ export default function CourseCard({
   }, [showPrice]);
 
   // Signed-in visitors stay inside the dashboard; everyone else gets the public page.
-  const detailsHref = signedIn || showPrice ? "/dashboard/browse" : "/courses";
+  const inDashboard = signedIn || showPrice;
+  const detailsHref = inDashboard ? "/dashboard/browse" : "/courses";
+  const enrollHref = inDashboard
+    ? "/dashboard/checkout?course=" + slugify(course.title)
+    : "/contact";
 
   return (
     <article className="card flex flex-col overflow-hidden">
@@ -76,7 +84,7 @@ export default function CourseCard({
           <Link href={detailsHref} className="btn-ghost flex-1 py-2.5">
             View Details
           </Link>
-          <Link href="/contact" className="btn-primary flex-1 py-2.5">
+          <Link href={enrollHref} className="btn-primary flex-1 py-2.5">
             Enroll Now
           </Link>
         </div>
