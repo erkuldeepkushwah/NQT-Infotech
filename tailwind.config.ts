@@ -27,6 +27,8 @@ const config: Config = {
           900: "#071231",
           950: "#040A1F",
         },
+        // Footer backdrop, sampled from the reference design.
+        footer: "#152A68",
       },
       fontFamily: {
         sans: [

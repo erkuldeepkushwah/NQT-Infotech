@@ -24,18 +24,18 @@ const socials = [
 
 export default function Footer() {
   return (
-    <footer className="border-t border-slate-100 bg-white">
+    <footer className="bg-footer text-white">
       <div className="container-x grid gap-10 py-16 lg:grid-cols-4">
         <div>
-          <Logo />
-          <ul className="mt-6 space-y-3 text-sm text-slate-600">
+          <Logo variant="light" />
+          <ul className="mt-6 space-y-3 text-sm text-white/75">
             <li>
-              <a href={"tel:" + site.phoneHref} className="font-semibold text-brand-600 hover:underline">
+              <a href={"tel:" + site.phoneHref} className="font-semibold text-brand-300 hover:underline">
                 Call: {site.phone}
               </a>
             </li>
             <li>
-              <a href={"mailto:" + site.email} className="hover:text-brand-600">
+              <a href={"mailto:" + site.email} className="hover:text-white">
                 {site.email}
               </a>
             </li>
@@ -44,11 +44,11 @@ export default function Footer() {
         </div>
 
         <div>
-          <h4 className="text-sm font-semibold text-navy-800">Info</h4>
-          <ul className="mt-5 space-y-3 text-sm text-slate-600">
+          <h4 className="text-sm font-semibold text-white">Info</h4>
+          <ul className="mt-5 space-y-3 text-sm text-white/75">
             {infoLinks.map((link) => (
               <li key={link.href}>
-                <Link href={link.href} className="hover:text-brand-600">
+                <Link href={link.href} className="transition hover:text-brand-300">
                   {link.label}
                 </Link>
               </li>
@@ -57,11 +57,11 @@ export default function Footer() {
         </div>
 
         <div>
-          <h4 className="text-sm font-semibold text-navy-800">Services</h4>
-          <ul className="mt-5 space-y-3 text-sm text-slate-600">
+          <h4 className="text-sm font-semibold text-white">Services</h4>
+          <ul className="mt-5 space-y-3 text-sm text-white/75">
             {serviceLinks.map((link) => (
               <li key={link.href}>
-                <Link href={link.href} className="hover:text-brand-600">
+                <Link href={link.href} className="transition hover:text-brand-300">
                   {link.label}
                 </Link>
               </li>
@@ -78,26 +78,26 @@ export default function Footer() {
                 target="_blank"
                 rel="noreferrer"
                 aria-label={s.name}
-                className="flex h-9 w-9 items-center justify-center rounded-md text-slate-500 transition hover:bg-brand-50 hover:text-brand-600"
+                className="flex h-9 w-9 items-center justify-center rounded-md text-white/70 transition hover:bg-white/10 hover:text-white"
               >
                 <Icon name={s.name} className="h-5 w-5" />
               </a>
             ))}
           </div>
-          <form className="mt-6 flex items-center gap-2 rounded-md border border-slate-200 px-3 py-2">
-            <Icon name="search" className="h-4 w-4 text-slate-400" />
+          <form className="mt-6 flex items-center gap-2 rounded-md border border-white/20 px-3 py-2">
+            <Icon name="search" className="h-4 w-4 text-white/50" />
             <input
               type="search"
               placeholder="Search..."
               aria-label="Search"
-              className="w-full bg-transparent text-sm outline-none placeholder:text-slate-400"
+              className="w-full bg-transparent text-sm text-white outline-none placeholder:text-white/50"
             />
           </form>
         </div>
       </div>
 
-      <div className="border-t border-slate-100">
-        <div className="container-x flex flex-col items-center justify-between gap-2 py-6 text-xs text-slate-500 sm:flex-row">
+      <div className="border-t border-white/15">
+        <div className="container-x flex flex-col items-center justify-between gap-2 py-6 text-xs text-white/60 sm:flex-row">
           <p>
             &copy; {site.name}, {new Date().getFullYear()}. All rights reserved.
           </p>
