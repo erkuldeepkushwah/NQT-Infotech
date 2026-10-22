@@ -80,7 +80,7 @@ export default function ContactForm() {
         <label htmlFor="message" className="field-label">Your message</label>
         <textarea id="message" name="message" rows={5} required className="field" />
       </div>
-      <label className="flex items-start gap-3 text-sm text-slate-600">
+      <label className="flex items-start gap-3 text-sm text-slate-900">
         <input type="checkbox" required className="mt-0.5 h-4 w-4 rounded border-slate-300" />
         <span>I agree to the privacy policy and terms of service.</span>
       </label>

@@ -42,7 +42,7 @@ export default function Navbar() {
                 href={link.href}
                 className={
                   "text-sm font-medium transition hover:text-brand-600 " +
-                  (active ? "text-brand-600" : "text-slate-600")
+                  (active ? "text-brand-600" : "text-slate-900")
                 }
               >
                 {link.label}
@@ -90,7 +90,7 @@ export default function Navbar() {
                 key={link.label}
                 href={link.href}
                 onClick={() => setOpen(false)}
-                className="rounded-md px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+                className="rounded-md px-3 py-2 text-sm font-medium text-slate-900 hover:bg-slate-50"
               >
                 {link.label}
               </Link>
