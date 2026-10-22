@@ -97,6 +97,14 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
     });
   }, []);
 
+  // Signed out (including straight after logout): send them to the login page
+  // rather than showing a "sign in to continue" gate.
+  useEffect(() => {
+    if (ready && !user) {
+      window.location.replace((process.env.NEXT_PUBLIC_BASE_PATH || "") + "/login/");
+    }
+  }, [ready, user]);
+
   const path = (pathname || "").replace(/\/+$/, "") || "/";
 
   // Keep the group that owns the current page open.
@@ -126,12 +134,8 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
 
   if (!user) {
     return (
-      <div className="mx-auto max-w-lg px-6 py-24 text-center">
-        <h1 className="text-xl font-semibold text-navy-800">Sign in to continue</h1>
-        <p className="mt-3 text-sm text-slate-600">
-          The admin area is only available to signed-in administrators.
-        </p>
-        <Link href="/login" className="btn-primary mt-7">Go to login</Link>
+      <div className="mx-auto max-w-lg px-6 py-24 text-center text-sm text-slate-500">
+        Taking you to the sign-in page...
       </div>
     );
   }
@@ -150,7 +154,8 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
     );
   }
 
-  const displayName = user.displayName || user.email || "Admin";
+  // The admin top bar shows the role, not the signed-in email address.
+  const displayName = "Admin";
 
   function isActive(href: string) {
     if (href === "/admin") return path === "/admin";
@@ -192,7 +197,6 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
           <div className="flex items-center gap-3">
             <span className="hidden text-right text-sm leading-tight sm:block">
               <span className="block font-semibold text-navy-800">{displayName}</span>
-              <span className="block text-xs text-slate-500">Enterprise Admin</span>
             </span>
             <span className="flex h-9 w-9 items-center justify-center rounded-full bg-brand-600 text-xs font-bold text-white">
               {initials(displayName)}

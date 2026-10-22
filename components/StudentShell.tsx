@@ -84,6 +84,14 @@ export default function StudentShell({ children }: { children: React.ReactNode }
     });
   }, []);
 
+  // Signed out (including straight after logout): send them to the login page
+  // rather than showing a "sign in to continue" gate.
+  useEffect(() => {
+    if (ready && !user) {
+      window.location.replace((process.env.NEXT_PUBLIC_BASE_PATH || "") + "/login/");
+    }
+  }, [ready, user]);
+
   if (!isFirebaseConfigured) {
     return (
       <div className="mx-auto max-w-lg px-6 py-24 text-center">
@@ -105,14 +113,8 @@ export default function StudentShell({ children }: { children: React.ReactNode }
 
   if (!user) {
     return (
-      <div className="mx-auto max-w-lg px-6 py-24 text-center">
-        <h1 className="text-xl font-semibold text-navy-800">Sign in to continue</h1>
-        <p className="mt-3 text-sm text-slate-600">
-          Your learning dashboard is available once you sign in.
-        </p>
-        <Link href="/login" className="btn-primary mt-7">
-          Go to login
-        </Link>
+      <div className="mx-auto max-w-lg px-6 py-24 text-center text-sm text-slate-500">
+        Taking you to the sign-in page...
       </div>
     );
   }
