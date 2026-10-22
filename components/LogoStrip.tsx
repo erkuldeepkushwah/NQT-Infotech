@@ -1,31 +1,31 @@
 import { clientLogos } from "@/lib/site";
-import { logo } from "@/lib/images";
 
-// Infinite logo carousel: the row is rendered twice and the track is translated
-// by -50%, so the loop is seamless. Hovering pauses it.
+// Infinite logo carousel, matching the Brivora template's ticker: the row is
+// rendered twice and each group slides by its own width plus the gap, so the
+// loop is seamless. Item width, gap and speed all come from logs.tsx.
 export default function LogoStrip() {
-  const track = [...clientLogos, ...clientLogos];
-
   return (
-    <div className="logo-carousel relative overflow-hidden">
-      <div className="logo-track flex w-max items-center gap-12 sm:gap-16">
-        {track.map((name, index) => (
-          <img
-            key={name + "-" + index}
-            src={logo(name)}
-            alt={name}
-            width={210}
-            height={48}
-            loading="lazy"
-            aria-hidden={index >= clientLogos.length}
-            className="h-9 w-auto flex-none object-contain opacity-70 grayscale transition duration-300 hover:opacity-100 sm:h-11"
-          />
+    <div className="logo-carousel">
+      <div className="logo-track">
+        {[0, 1].map((copy) => (
+          <div className="logo-group" key={copy} aria-hidden={copy === 1}>
+            {clientLogos.map((src) => (
+              <div className="logo-item" key={src}>
+                <img
+                  src={src}
+                  alt={copy === 0 ? "Client logo" : ""}
+                  width={800}
+                  height={400}
+                  loading="lazy"
+                  decoding="async"
+                  referrerPolicy="no-referrer"
+                  className="logo-img"
+                />
+              </div>
+            ))}
+          </div>
         ))}
       </div>
-
-      {/* soft edges so the logos fade in and out rather than being cut */}
-      <div className="pointer-events-none absolute inset-y-0 left-0 w-12 bg-gradient-to-r from-white to-transparent sm:w-24" />
-      <div className="pointer-events-none absolute inset-y-0 right-0 w-12 bg-gradient-to-l from-white to-transparent sm:w-24" />
     </div>
   );
 }

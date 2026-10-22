@@ -67,28 +67,63 @@ body {
   }
 }
 
-/* Infinite logo carousel. The row is rendered twice and the track slides by
-   half its width, so the loop never jumps. */
+/* Infinite logo carousel. Sizes, gap, speed and the edge mask are taken from
+   the Brivora template (logs.tsx: .wpbbe-8467760e). */
+.logo-carousel {
+  --logo-gap: clamp(40px, 37.2174px + 0.8696vw, 48px);
+  --logo-item-width: 200px;
+  position: relative;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 10%, #000 90%, transparent);
+  mask-image: linear-gradient(90deg, transparent 0%, #000 10%, #000 90%, transparent);
+}
+
+.logo-track {
+  display: flex;
+  width: max-content;
+}
+
+.logo-group {
+  display: flex;
+  align-items: center;
+  gap: var(--logo-gap);
+  margin-right: var(--logo-gap);
+  animation: logo-marquee 60s linear infinite;
+  will-change: transform;
+}
+
+.logo-item {
+  display: flex;
+  width: var(--logo-item-width);
+  align-items: center;
+  justify-content: center;
+}
+
+.logo-img {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  opacity: 0.75;
+  filter: grayscale(1);
+  transition: opacity 0.3s ease, filter 0.3s ease;
+}
+
+.logo-item:hover .logo-img {
+  opacity: 1;
+  filter: grayscale(0);
+}
+
 @keyframes logo-marquee {
   from {
     transform: translate3d(0, 0, 0);
   }
   to {
-    transform: translate3d(-50%, 0, 0);
+    transform: translate3d(calc(-100% - var(--logo-gap)), 0, 0);
   }
 }
 
-.logo-track {
-  animation: logo-marquee 30s linear infinite;
-  will-change: transform;
-}
-
-.logo-carousel:hover .logo-track {
-  animation-play-state: paused;
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .logo-track {
+  .logo-group {
     animation: none;
   }
 }

@@ -534,11 +534,16 @@ export const techStack = [
   "Figma",
 ];
 
+// Client logos for the logo carousel. The artwork, the order and the sizes are
+// taken from the Brivora template (logs.tsx): each logo is an 800x400 SVG laid
+// out 200px wide, with a clamp(40px..48px) gap and a 60s scroll.
 export const clientLogos = [
-  "Nexora",
-  "WISDOM",
-  "educore",
-  "LUMEN",
-  "SCIPHERS",
-  "VERTEXA",
+  "https://the7.io/fse-business/wp-content/uploads/sites/133/2026/05/logo-color-03.svg",
+  "https://the7.io/fse-business/wp-content/uploads/sites/133/2026/05/logo-color-04.svg",
+  "https://the7.io/fse-business/wp-content/uploads/sites/133/2026/05/logo-color-08.svg",
+  "https://the7.io/fse-business/wp-content/uploads/sites/133/2026/05/logo-color-13.svg",
+  "https://the7.io/fse-business/wp-content/uploads/sites/133/2026/05/logo-color-05.svg",
+  "https://the7.io/fse-business/wp-content/uploads/sites/133/2026/05/logo-color-06.svg",
+  "https://the7.io/fse-business/wp-content/uploads/sites/133/2026/05/logo-color-07.svg",
+  "https://the7.io/fse-business/wp-content/uploads/sites/133/2026/05/logo-color-10.svg",
 ];
