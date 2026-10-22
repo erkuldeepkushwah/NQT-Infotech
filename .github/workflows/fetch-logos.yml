@@ -1,0 +1,26 @@
+name: Fetch client logos
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download logos from the Brivora template source
+        run: |
+          mkdir -p logos
+          BASE="https://the7.io/fse-business/wp-content/uploads/sites/133/2026/05"
+          for n in 03 04 05 06 07 08 10 13; do
+            code=$(curl -s -L -A "Mozilla/5.0" -o "logos/logo-color-$n.svg" -w "%{http_code}" "$BASE/logo-color-$n.svg")
+            echo "FETCH logo-color-$n.svg status=$code bytes=$(wc -c < logos/logo-color-$n.svg)"
+          done
+      - name: Emit base64 payload
+        run: |
+          for f in logos/*.svg; do
+            name=$(basename "$f" .svg)
+            echo "LOGO_B64:${name}:$(base64 -w0 "$f")"
+          done
