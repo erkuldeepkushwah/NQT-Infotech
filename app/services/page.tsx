@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 export default function ServicesPage() {
   return (
     <>
-      <PageHero title="Our IT services" />
+      <PageHero title="Services" />
 
       <section className="section">
         <div className="container-x grid gap-6 sm:grid-cols-2 lg:grid-cols-3">

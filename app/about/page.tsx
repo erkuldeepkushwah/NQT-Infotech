@@ -18,7 +18,7 @@ export const metadata: Metadata = {
 export default function AboutPage() {
   return (
     <>
-      <PageHero title="About our company" />
+      <PageHero title="About" />
 
       <section className="section">
         <div className="container-x grid items-center gap-12 lg:grid-cols-2">
