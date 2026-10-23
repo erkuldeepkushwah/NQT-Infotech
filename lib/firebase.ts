@@ -1,5 +1,11 @@
-import { getApp, getApps, initializeApp, type FirebaseApp } from "firebase/app";
-import { getAuth, type Auth } from "firebase/auth";
+import { deleteApp, getApp, getApps, initializeApp, type FirebaseApp } from "firebase/app";
+import {
+  createUserWithEmailAndPassword,
+  getAuth,
+  signOut,
+  updateProfile,
+  type Auth,
+} from "firebase/auth";
 import { getFirestore, type Firestore } from "firebase/firestore";
 
 // The config is read from environment variables so the values stay out of the
@@ -37,3 +43,31 @@ if (isFirebaseConfigured) {
 
 export const auth = authInstance;
 export const db = dbInstance;
+
+/**
+ * Creates a student account from the admin panel without disturbing the admin's
+ * own session.
+ *
+ * Firebase signs the new account in on whichever app instance creates it, so
+ * this runs on a throwaway secondary app and signs straight back out of it.
+ * Returns the new user's uid.
+ */
+export async function createUserAsAdmin(
+  email: string,
+  password: string,
+  displayName: string
+): Promise<string> {
+  const secondary = initializeApp(firebaseConfig, "admin-create-" + Date.now());
+  try {
+    const secondaryAuth = getAuth(secondary);
+    const credential = await createUserWithEmailAndPassword(secondaryAuth, email, password);
+    if (displayName) {
+      await updateProfile(credential.user, { displayName });
+    }
+    const uid = credential.user.uid;
+    await signOut(secondaryAuth);
+    return uid;
+  } finally {
+    await deleteApp(secondary);
+  }
+}

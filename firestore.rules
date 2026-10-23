@@ -43,13 +43,16 @@ service cloud.firestore {
     // ----------------------------------------------------------------- users
     // A signed-in user owns their own profile document and may create it once.
     match /users/{uid} {
-      allow create: if request.auth != null
-        && request.auth.uid == uid
-        && request.resource.data.keys().hasOnly(
-          ['name', 'email', 'role', 'status', 'createdAt']
-        )
-        && request.resource.data.role == 'user'
-        && request.resource.data.status == 'active';
+      // A new account may write its own profile once; admins may also create
+      // accounts for other people from the admin panel.
+      allow create: if isAdmin()
+        || (request.auth != null
+            && request.auth.uid == uid
+            && request.resource.data.keys().hasOnly(
+              ['name', 'email', 'phone', 'role', 'status', 'createdAt']
+            )
+            && request.resource.data.role == 'user'
+            && request.resource.data.status == 'active');
 
       allow read: if request.auth != null
         && (request.auth.uid == uid || isAdmin());
