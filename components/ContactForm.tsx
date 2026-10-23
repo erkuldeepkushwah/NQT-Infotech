@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { push, ref, serverTimestamp as rtdbTimestamp, set } from "firebase/database";
-import { isFirebaseConfigured, rtdb } from "@/lib/firebase";
+import { isFirebaseConfigured } from "@/lib/firebase";
+import { submitEnquiry } from "@/lib/enquiries";
 
 type Status = "idle" | "sending" | "sent" | "error";
 
@@ -15,7 +15,7 @@ export default function ContactForm() {
     const form = event.currentTarget;
     const data = new FormData(form);
 
-    if (!isFirebaseConfigured || !rtdb) {
+    if (!isFirebaseConfigured) {
       setStatus("error");
       setNotice("The enquiry form is not connected yet. Please email us directly.");
       return;
@@ -25,21 +25,20 @@ export default function ContactForm() {
     setNotice("");
 
     try {
-      // Enquiries live in the Realtime Database, where the admin panel reads them.
-      await set(push(ref(rtdb, "enquiries")), {
+      // Saved to the Realtime Database, with Firestore as a safety net.
+      await submitEnquiry({
         name: String(data.get("fullname") || "").trim(),
         email: String(data.get("email") || "").trim(),
         phone: String(data.get("phone") || "").trim(),
         company: String(data.get("company") || "").trim(),
         message: String(data.get("message") || "").trim(),
-        createdAt: rtdbTimestamp(),
       });
       form.reset();
       setStatus("sent");
     } catch (err) {
       setStatus("error");
       setNotice(
-        "Sorry, your message could not be sent. Please try again, or email us directly."
+        "Sorry, your message could not be sent. Please email us at brivora@gmail.com instead."
       );
     }
   }
