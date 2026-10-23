@@ -84,6 +84,14 @@ service cloud.firestore {
       allow update, delete: if isAdmin();
     }
 
+    // -------------------------------------------------------------- settings
+    // Payment settings (UPI id, bank details) are read by the public checkout
+    // page, so reading is open; only admins can change them.
+    match /settings/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
     // Everything else is closed.
     match /{document=**} {
       allow read, write: if false;

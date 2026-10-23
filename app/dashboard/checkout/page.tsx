@@ -5,13 +5,12 @@ import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { onAuthStateChanged, type User } from "firebase/auth";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { QRCodeSVG } from "qrcode.react";
 import { auth, db } from "@/lib/firebase";
+import { upiLink, usePaymentSettings } from "@/lib/payment";
 import { courses } from "@/lib/site";
 import { img } from "@/lib/images";
 
-const UPI_ID = "brivora@yesbank";
-const SUPPORT_PHONE = "+91-78986-92133";
-const SUPPORT_EMAIL = "brivora@gmail.com";
 const WINDOW_SECONDS = 5 * 60;
 
 function slugify(value: string): string {
@@ -80,11 +79,13 @@ function Checkout() {
   const price = toAmount(course.price);
   const oldPrice = toAmount(course.oldPrice);
   const discount = Math.max(oldPrice - price, 0);
+  const { settings } = usePaymentSettings();
+  const qrValue = upiLink(settings, price, course.title);
   const clock = String(Math.floor(seconds / 60)).padStart(2, "0") + ":" + String(seconds % 60).padStart(2, "0");
 
   async function copyUpi() {
     try {
-      await navigator.clipboard.writeText(UPI_ID);
+      await navigator.clipboard.writeText(settings.upiId);
       setCopied(true);
       window.setTimeout(() => setCopied(false), 1800);
     } catch {
@@ -145,7 +146,7 @@ function Checkout() {
       setStatus("done");
     } catch (error) {
       setStatus("error");
-      setMessage("Could not save the payment. Please try again or email " + SUPPORT_EMAIL + ".");
+      setMessage("Could not save the payment. Please try again or email " + settings.supportEmail + ".");
     }
   }
 
@@ -240,11 +241,9 @@ function Checkout() {
 
           <div className="mt-6 grid grid-cols-[200px_1fr] gap-6">
             <div className="rounded-lg border border-slate-200 p-3">
-              <img
-                src={(process.env.NEXT_PUBLIC_BASE_PATH || "") + "/qr/" + slugify(course.title) + ".png"}
-                alt={"UPI QR code for " + course.title}
-                width={360}
-                height={360}
+              <QRCodeSVG
+                value={qrValue}
+                title={"UPI QR code for " + course.title}
                 className="h-auto w-full"
               />
             </div>
@@ -271,7 +270,7 @@ function Checkout() {
 
               <div className="mt-5 flex items-center gap-3 rounded-md border border-slate-200 px-3 py-2.5">
                 <span className="text-xs text-slate-900">UPI ID</span>
-                <span className="flex-1 text-sm font-semibold text-slate-900">{UPI_ID}</span>
+                <span className="flex-1 text-sm font-semibold text-slate-900">{settings.upiId}</span>
                 <button
                   type="button"
                   onClick={copyUpi}
@@ -281,10 +280,26 @@ function Checkout() {
                 </button>
               </div>
 
+              {tab === "netbanking" ? (
+                <dl className="mt-5 space-y-2 rounded-md border border-slate-200 px-3 py-3 text-xs">
+                  {[
+                    ["Account name", settings.accountName],
+                    ["Account number", settings.accountNumber],
+                    ["IFSC", settings.ifsc],
+                    ["Bank", settings.bankName],
+                  ].map(([label, value]) => (
+                    <div key={label} className="flex items-start justify-between gap-4">
+                      <dt className="text-slate-500">{label}</dt>
+                      <dd className="text-right font-medium text-slate-900">{value || "-"}</dd>
+                    </div>
+                  ))}
+                </dl>
+              ) : null}
+
               <p className="mt-5 text-xs text-slate-500">
                 {tab === "upi"
                   ? "Pay the exact amount, then paste the UTR / reference number below."
-                  : "Transfer to the same UPI ID from your bank's net-banking app, then paste the reference number below."}
+                  : "Transfer to the account above, then paste the reference number below."}
               </p>
             </div>
           </div>
@@ -379,13 +394,13 @@ function Checkout() {
               <p className="font-semibold text-slate-900">Need assistance?</p>
               <p className="mt-2 text-slate-900">
                 Call:{" "}
-                <a href={"tel:" + SUPPORT_PHONE} className="font-semibold text-brand-600 hover:underline">
-                  {SUPPORT_PHONE}
+                <a href={"tel:" + settings.supportPhone} className="font-semibold text-brand-600 hover:underline">
+                  {settings.supportPhone}
                 </a>
               </p>
               <p className="text-slate-900">
-                <a href={"mailto:" + SUPPORT_EMAIL} className="hover:underline">
-                  {SUPPORT_EMAIL}
+                <a href={"mailto:" + settings.supportEmail} className="hover:underline">
+                  {settings.supportEmail}
                 </a>
               </p>
             </div>
