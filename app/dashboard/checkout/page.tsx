@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Suspense, useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { onAuthStateChanged, type User } from "firebase/auth";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
@@ -57,7 +57,9 @@ function Checkout() {
 
   const [user, setUser] = useState<User | null>(null);
   const [tab, setTab] = useState<"upi" | "netbanking">("upi");
-  const [utr, setUtr] = useState("");
+  // Six separate boxes, one per digit of the UTR.
+  const [digits, setDigits] = useState<string[]>(Array(6).fill(""));
+  const boxes = useRef<Array<HTMLInputElement | null>>([]);
   const [copied, setCopied] = useState(false);
   const [seconds, setSeconds] = useState(WINDOW_SECONDS);
   const [status, setStatus] = useState<"idle" | "saving" | "done" | "error">("idle");
@@ -90,12 +92,32 @@ function Checkout() {
     }
   }
 
+  function handleDigit(index: number, raw: string) {
+    const value = raw.replace(/\D/g, "");
+    if (!value) {
+      setDigits((prev) => prev.map((d, i) => (i === index ? "" : d)));
+      return;
+    }
+    setDigits((prev) => {
+      const next = [...prev];
+      for (let k = 0; k < value.length && index + k < 6; k += 1) next[index + k] = value[k];
+      return next;
+    });
+    boxes.current[Math.min(index + value.length, 5)]?.focus();
+  }
+
+  function handleDigitKey(index: number, event: React.KeyboardEvent<HTMLInputElement>) {
+    if (event.key === "Backspace" && !digits[index] && index > 0) {
+      boxes.current[index - 1]?.focus();
+    }
+  }
+
   async function submit(event: React.FormEvent) {
     event.preventDefault();
-    const clean = utr.replace(/\s/g, "");
-    if (!/^[0-9]{6}$|^[0-9]{12}$/.test(clean)) {
+    const clean = digits.join("");
+    if (!/^[0-9]{6}$/.test(clean)) {
       setStatus("error");
-      setMessage("Enter the 6 or 12 digit UTR / reference number from your UPI app.");
+      setMessage("Enter all six digits of the UTR / reference number from your UPI app.");
       return;
     }
     if (!user) {
@@ -135,7 +157,7 @@ function Checkout() {
         </span>
         <h1 className="mt-5 text-2xl font-bold text-navy-800">Payment submitted</h1>
         <p className="mt-3 text-sm text-slate-600">
-          We have received your reference <strong>{utr.replace(/\s/g, "")}</strong> for{" "}
+          We have received your reference <strong>{digits.join("")}</strong> for{" "}
           <strong>{course.title}</strong> ({rupees(price)}). Our team verifies UPI payments
           manually and you will get access shortly.
         </p>
@@ -170,12 +192,12 @@ function Checkout() {
           <li className="text-slate-400">3. Instant Access</li>
         </ol>
         <div className="flex items-center gap-3">
-          <span className="rounded-md border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-900">
+          <span className="rounded-md border border-amber-300 bg-amber-50 px-3 py-1.5 text-xs font-semibold text-amber-700">
             ⏱ TIME {clock}
           </span>
           <Link
             href="/dashboard/browse"
-            className="rounded-md border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-900 hover:border-slate-400"
+            className="rounded-md border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-700 hover:border-slate-300"
           >
             ✕ Close
           </Link>
@@ -228,7 +250,24 @@ function Checkout() {
             </div>
             <div>
               <p className="text-base font-semibold text-navy-800">Scan with any UPI App</p>
-              <p className="mt-1 text-sm text-slate-900">GPay · PhonePe · Paytm · CRED</p>
+              {/* Small brand marks instead of spelling the apps out - all the
+                  same height so the row reads as one set. */}
+              <div className="mt-3 flex flex-wrap items-end gap-4">
+                {[
+                  { file: "gpay.svg", label: "Google Pay", size: "h-5" },
+                  { file: "phonepe.svg", label: "PhonePe", size: "h-5" },
+                  { file: "paytm.svg", label: "Paytm", size: "h-5" },
+                  { file: "cred.png", label: "CRED", size: "h-5" },
+                ].map((app) => (
+                  <img
+                    key={app.file}
+                    src={(process.env.NEXT_PUBLIC_BASE_PATH || "") + "/pay/" + app.file}
+                    alt={app.label}
+                    title={app.label}
+                    className={app.size + " w-auto object-contain"}
+                  />
+                ))}
+              </div>
 
               <div className="mt-5 flex items-center gap-3 rounded-md border border-slate-200 px-3 py-2.5">
                 <span className="text-xs text-slate-900">UPI ID</span>
@@ -250,22 +289,39 @@ function Checkout() {
             </div>
           </div>
 
-          {/* Fixed-width so the field never stretches or squeezes with the panel. */}
-          <div className="mt-6 w-[440px]">
-            <label htmlFor="utr" className="field-label block">
+          {/* Six separate boxes, one digit each - fixed width so the row never
+              stretches or squeezes with the panel. */}
+          <div className="mx-auto mt-6 w-[440px]">
+            <span className="field-label block">
               UTR / Transaction Reference Number (Last 6 digits)
-            </label>
-            <input
-              id="utr"
-              name="utr"
-              inputMode="numeric"
-              value={utr}
-              onChange={(e) => setUtr(e.target.value)}
-              className="field"
-              aria-describedby="utr-help"
-            />
-            <p id="utr-help" className="mt-1.5 text-xs text-slate-500">
-              Enter the 6 or 12 digit UTR / Ref Number from your payment app.
+            </span>
+            <div className="mt-2 flex gap-4">
+              {digits.map((digit, index) => (
+                <input
+                  key={index}
+                  ref={(el) => {
+                    boxes.current[index] = el;
+                  }}
+                  value={digit}
+                  onChange={(event) => handleDigit(index, event.target.value)}
+                  onKeyDown={(event) => handleDigitKey(index, event)}
+                  onPaste={(event) => {
+                    const pasted = event.clipboardData.getData("text").replace(/\D/g, "");
+                    if (pasted) {
+                      event.preventDefault();
+                      handleDigit(index, pasted);
+                    }
+                  }}
+                  inputMode="numeric"
+                  autoComplete="one-time-code"
+                  maxLength={1}
+                  aria-label={"UTR digit " + (index + 1)}
+                  className="h-12 w-[52px] rounded-md border border-slate-200 bg-white text-center text-lg font-semibold text-slate-900 outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-100"
+                />
+              ))}
+            </div>
+            <p id="utr-help" className="mt-2 text-xs text-slate-500">
+              Enter the last 6 digits of the UTR / Ref Number from your payment app.
             </p>
           </div>
 
@@ -309,7 +365,7 @@ function Checkout() {
               </div>
               <div className="flex items-center justify-between">
                 <dt className="text-slate-900">Discount</dt>
-                <dd className="font-medium text-slate-900">- {rupees(discount)}</dd>
+                <dd className="font-medium text-green-600">- {rupees(discount)}</dd>
               </div>
               <div className="flex items-center justify-between border-t border-slate-200 pt-4">
                 <dt className="text-xs font-semibold uppercase tracking-wide text-slate-900">
@@ -323,7 +379,7 @@ function Checkout() {
               <p className="font-semibold text-slate-900">Need assistance?</p>
               <p className="mt-2 text-slate-900">
                 Call:{" "}
-                <a href={"tel:" + SUPPORT_PHONE} className="font-semibold text-slate-900 hover:underline">
+                <a href={"tel:" + SUPPORT_PHONE} className="font-semibold text-brand-600 hover:underline">
                   {SUPPORT_PHONE}
                 </a>
               </p>
