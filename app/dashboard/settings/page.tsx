@@ -8,8 +8,9 @@ import {
   updateProfile,
   type User,
 } from "firebase/auth";
-import { addDoc, collection, doc, serverTimestamp, setDoc } from "firebase/firestore";
-import { auth, db } from "@/lib/firebase";
+import { push, ref, set as rtdbSet } from "firebase/database";
+import { auth, rtdb } from "@/lib/firebase";
+import { saveUserProfile } from "@/lib/profiles";
 
 const NOTIFICATIONS = [
   { key: "courseUpdates", label: "Course updates", hint: "New modules, schedule changes" },
@@ -120,12 +121,12 @@ export default function StudentSettingsPage() {
     setBusy(true);
     try {
       if (name.trim()) await updateProfile(auth.currentUser, { displayName: name.trim() });
-      if (db && user) {
-        await setDoc(
-          doc(db, "users", user.uid),
-          { name: name.trim(), phone: phone.trim(), email: user.email || "" },
-          { merge: true }
-        );
+      if (user) {
+        await saveUserProfile(user.uid, {
+          name: name.trim(),
+          email: user.email || "",
+          phone: phone.trim(),
+        });
       }
       setProfileMsg("Saved.");
     } catch {
@@ -162,14 +163,14 @@ export default function StudentSettingsPage() {
 
   async function savePreferences() {
     setPrefMsg("");
-    if (!db || !user) return;
+    if (!rtdb || !user) return;
     setBusy(true);
     try {
-      await setDoc(
-        doc(db, "users", user.uid),
-        { notifications: toggles, preferences: { language, timezone } },
-        { merge: true }
-      );
+      await rtdbSet(ref(rtdb, "users/" + user.uid + "/preferences"), {
+        notifications: toggles,
+        language,
+        timezone,
+      });
       setPrefMsg("Preferences saved.");
     } catch {
       setPrefMsg("Could not save. Please try again.");
@@ -182,14 +183,14 @@ export default function StudentSettingsPage() {
     setDeleteMsg("");
     setBusy(true);
     try {
-      if (db && user) {
-        await addDoc(collection(db, "enquiries"), {
+      if (rtdb && user) {
+        await rtdbSet(push(ref(rtdb, "enquiries")), {
           name: user.displayName || "Student",
           email: user.email || "",
           phone: "",
           company: "",
           message: "Account deletion request from the student dashboard settings page.",
-          createdAt: serverTimestamp(),
+          createdAt: Date.now(),
         });
       }
       setDeleteMsg("Request sent. Our team will confirm by email.");

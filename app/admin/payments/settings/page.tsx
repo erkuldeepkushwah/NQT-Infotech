@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import { get, ref, set as rtdbSet } from "firebase/database";
 import { QRCodeSVG } from "qrcode.react";
-import { db } from "@/lib/firebase";
+import { rtdb } from "@/lib/firebase";
 import {
   DEFAULT_PAYMENT_SETTINGS,
   upiLink,
@@ -34,17 +34,17 @@ export default function PaymentSettingsPage() {
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    if (!db) {
+    if (!rtdb) {
       setLoaded(true);
       return;
     }
     (async () => {
       try {
-        const snap = await getDoc(doc(db, "settings", "payment"));
+        const snap = await get(ref(rtdb, "settings/payment"));
         if (snap.exists()) {
           setSettings({
             ...DEFAULT_PAYMENT_SETTINGS,
-            ...((snap.data() as Partial<PaymentSettings>) || {}),
+            ...((snap.val() as Partial<PaymentSettings>) || {}),
           });
         }
       } catch {
@@ -61,14 +61,14 @@ export default function PaymentSettingsPage() {
 
   async function save(event: React.FormEvent) {
     event.preventDefault();
-    if (!db) {
-      setNotice("Firebase is not configured.");
+    if (!rtdb) {
+      setNotice("Realtime Database is not configured.");
       return;
     }
     setBusy(true);
     setNotice("");
     try {
-      await setDoc(doc(db, "settings", "payment"), settings, { merge: true });
+      await rtdbSet(ref(rtdb, "settings/payment"), settings);
       setNotice("Payment settings saved.");
     } catch {
       setNotice("Could not save. Check that you are signed in as an admin.");

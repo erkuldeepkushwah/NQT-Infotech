@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { doc, onSnapshot } from "firebase/firestore";
-import { db } from "@/lib/firebase";
+import { onValue, ref } from "firebase/database";
+import { rtdb } from "@/lib/firebase";
 
 // Everything the checkout needs to show a payment method. The admin edits this
 // on Payments -> Settings; the checkout reads it live.
@@ -50,21 +50,42 @@ export function usePaymentSettings() {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    if (!db) {
+    if (!rtdb) {
       setReady(true);
       return;
     }
-    return onSnapshot(
-      doc(db, "settings", "payment"),
-      (snap) => {
+    // A database that is not answering must not hold the page up - fall back to
+    // the defaults after a few seconds.
+    let settled = false;
+    const timer = setTimeout(() => {
+      if (!settled) {
+        settled = true;
+        setReady(true);
+      }
+    }, 8000);
+
+    const unsubscribe = onValue(
+      ref(rtdb, "settings/payment"),
+      (snapshot) => {
+        settled = true;
+        clearTimeout(timer);
         setSettings({
           ...DEFAULT_PAYMENT_SETTINGS,
-          ...((snap.data() as Partial<PaymentSettings>) || {}),
+          ...((snapshot.val() as Partial<PaymentSettings>) || {}),
         });
         setReady(true);
       },
-      () => setReady(true)
+      () => {
+        settled = true;
+        clearTimeout(timer);
+        setReady(true);
+      }
     );
+
+    return () => {
+      clearTimeout(timer);
+      unsubscribe();
+    };
   }, []);
 
   return { settings, ready };

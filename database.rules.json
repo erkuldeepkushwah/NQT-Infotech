@@ -5,7 +5,7 @@
       "$uid": {
         ".read": "auth != null && (auth.uid === $uid || auth.token.email === 'brivora@gmail.com')",
         ".write": "auth != null && (auth.uid === $uid || auth.token.email === 'brivora@gmail.com')",
-        ".validate": "!newData.exists() || newData.hasChildren(['name', 'email'])"
+        ".validate": "!newData.exists() || newData.hasChild('preferences') || newData.hasChildren(['name', 'email'])"
       }
     },
     "enquiries": {
