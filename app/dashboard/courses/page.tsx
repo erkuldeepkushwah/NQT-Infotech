@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Panel, TableShell, EmptyRow } from "@/components/admin/ui";
-import { useCollection } from "@/lib/useCollection";
+import { useRtdbList } from "@/lib/useRtdb";
 import { courses as siteCourses } from "@/lib/site";
 
 type Course = {
@@ -20,7 +20,7 @@ function toNumber(value: string): number {
 }
 
 export default function MyCoursesPage() {
-  const { rows } = useCollection<Course>("courses", 100);
+  const { rows } = useRtdbList<Course>("courses");
 
   // Fall back to the courses built into the website so the catalogue is never
   // empty for a signed-in student.

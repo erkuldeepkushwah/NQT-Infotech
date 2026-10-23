@@ -2,33 +2,45 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { addDoc, collection, deleteDoc, doc, serverTimestamp } from "firebase/firestore";
+import { push, ref, remove, serverTimestamp as rtdbTimestamp, set } from "firebase/database";
 import { Panel, TableShell, EmptyRow, StatusPill } from "@/components/admin/ui";
-import { useCollection } from "@/lib/useCollection";
-import { db } from "@/lib/firebase";
+import { useRtdbList } from "@/lib/useRtdb";
+import { rtdb } from "@/lib/firebase";
 import { img } from "@/lib/images";
 import { courses as siteCourses } from "@/lib/site";
-import type { AdminCourse } from "@/lib/admin";
 import { toNumber } from "@/components/admin/CourseForm";
 
+type Course = {
+  id: string;
+  title?: string;
+  category?: string;
+  level?: string;
+  duration?: string;
+  fee?: number;
+  oldFee?: number;
+  image?: string;
+  status?: string;
+};
+
 export default function AdminCoursesPage() {
-  const { rows, loading, error } = useCollection<AdminCourse>("courses", 200);
-  const [removed, setRemoved] = useState<string[]>([]);
+  const { rows, loading, error } = useRtdbList<Course>("courses");
   const [busyId, setBusyId] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState("");
 
-  const visible = rows.filter((r) => !removed.includes(r.id));
   const usingFallback = !loading && !error && rows.length === 0;
-  const count = usingFallback ? siteCourses.length : visible.length;
+  const count = usingFallback ? siteCourses.length : rows.length;
 
   async function importCourses() {
-    if (!db) return;
+    if (!rtdb) {
+      setNotice("Realtime Database is not configured, so courses cannot be imported.");
+      return;
+    }
     setBusy(true);
     setNotice("");
     try {
       for (const c of siteCourses) {
-        await addDoc(collection(db, "courses"), {
+        await set(push(ref(rtdb, "courses")), {
           title: c.title,
           category: c.category,
           description: c.description,
@@ -38,21 +50,20 @@ export default function AdminCoursesPage() {
           oldFee: toNumber(c.oldPrice),
           image: c.image,
           status: "Active",
-          createdAt: serverTimestamp(),
+          createdAt: rtdbTimestamp(),
         });
       }
-      setNotice("Imported. Reloading...");
-      window.location.reload();
+      setNotice("Imported " + siteCourses.length + " courses.");
     } catch {
-      setNotice("Could not import. Check that the Firestore rules allow admin writes.");
+      setNotice("Could not import. Check that the Realtime Database rules allow admin writes.");
     } finally {
       setBusy(false);
     }
   }
 
-  async function remove(course: AdminCourse) {
-    if (!db) {
-      setNotice("Firebase is not configured, so courses cannot be removed.");
+  async function drop(course: Course) {
+    if (!rtdb) {
+      setNotice("Realtime Database is not configured, so courses cannot be removed.");
       return;
     }
     const ok = window.confirm(
@@ -63,8 +74,7 @@ export default function AdminCoursesPage() {
     setBusyId(course.id);
     setNotice("");
     try {
-      await deleteDoc(doc(db, "courses", course.id));
-      setRemoved((prev) => [...prev, course.id]);
+      await remove(ref(rtdb, "courses/" + course.id));
       setNotice("Course deleted.");
     } catch {
       setNotice("Could not delete this course. Check that you are signed in as an admin.");
@@ -138,13 +148,8 @@ export default function AdminCoursesPage() {
                 <td className="px-5 py-3 text-xs text-slate-400">Built-in</td>
               </tr>
             ))
-          ) : visible.length === 0 ? (
-            <EmptyRow
-              colSpan={6}
-              text="No courses yet. Use “Add course” to publish the first one."
-            />
           ) : (
-            visible.map((c) => (
+            rows.map((c) => (
               <tr key={c.id} className="border-b border-slate-50 last:border-0">
                 <td className="px-5 py-3">
                   <div className="flex items-center gap-3">
@@ -184,7 +189,7 @@ export default function AdminCoursesPage() {
                     </Link>
                     <button
                       type="button"
-                      onClick={() => remove(c)}
+                      onClick={() => drop(c)}
                       disabled={busyId === c.id}
                       className="rounded-md border border-red-200 px-3 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50 disabled:opacity-60"
                     >
@@ -200,7 +205,7 @@ export default function AdminCoursesPage() {
         {usingFallback ? (
           <p className="border-t border-slate-100 px-5 py-3 text-xs text-slate-500">
             These courses are built into the website, so they cannot be edited here yet.
-            Import them to store and manage them in Firestore.
+            Import them to store and manage them in the Realtime Database.
           </p>
         ) : null}
       </Panel>

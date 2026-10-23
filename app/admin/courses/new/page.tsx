@@ -1,23 +1,23 @@
 "use client";
 
 import { useState } from "react";
-import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { push, ref, serverTimestamp as rtdbTimestamp, set } from "firebase/database";
 import CourseForm, { EMPTY_COURSE, toNumber, type CourseDraft } from "@/components/admin/CourseForm";
-import { db } from "@/lib/firebase";
+import { rtdb } from "@/lib/firebase";
 
 export default function AddCoursePage() {
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState("");
 
   async function save(draft: CourseDraft) {
-    if (!db) {
-      setNotice("Firebase is not configured.");
+    if (!rtdb) {
+      setNotice("Realtime Database is not configured.");
       return;
     }
     setBusy(true);
     setNotice("");
     try {
-      await addDoc(collection(db, "courses"), {
+      await set(push(ref(rtdb, "courses")), {
         title: draft.title.trim(),
         category: draft.category.trim(),
         description: draft.description.trim(),
@@ -27,7 +27,7 @@ export default function AddCoursePage() {
         oldFee: toNumber(draft.oldFee),
         image: draft.image,
         status: draft.status,
-        createdAt: serverTimestamp(),
+        createdAt: rtdbTimestamp(),
       });
       window.location.assign((process.env.NEXT_PUBLIC_BASE_PATH || "") + "/admin/courses/");
     } catch {

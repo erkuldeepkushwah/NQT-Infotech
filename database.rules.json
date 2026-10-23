@@ -1,0 +1,22 @@
+{
+  "rules": {
+    "enquiries": {
+      ".read": "auth != null && auth.token.email === 'brivora@gmail.com'",
+      "$id": {
+        ".write": "auth != null && auth.token.email === 'brivora@gmail.com' ? true : !data.exists()",
+        ".validate": "!newData.exists() || (newData.hasChildren(['name', 'email', 'message']) && newData.child('name').isString() && newData.child('name').val().length <= 200 && newData.child('email').isString() && newData.child('email').val().length <= 320 && newData.child('message').isString() && newData.child('message').val().length <= 5000)"
+      }
+    },
+    "courses": {
+      ".read": true,
+      ".write": "auth != null && auth.token.email === 'brivora@gmail.com'",
+      "$id": {
+        ".validate": "!newData.exists() || (newData.hasChildren(['title']) && newData.child('title').isString())"
+      }
+    },
+    "settings": {
+      ".read": true,
+      ".write": "auth != null && auth.token.email === 'brivora@gmail.com'"
+    }
+  }
+}

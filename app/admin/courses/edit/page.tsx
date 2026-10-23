@@ -2,9 +2,9 @@
 
 import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { doc, getDoc, serverTimestamp, updateDoc } from "firebase/firestore";
+import { get, ref, serverTimestamp as rtdbTimestamp, update } from "firebase/database";
 import CourseForm, { EMPTY_COURSE, toNumber, type CourseDraft } from "@/components/admin/CourseForm";
-import { db } from "@/lib/firebase";
+import { rtdb } from "@/lib/firebase";
 
 function EditCourse() {
   const params = useSearchParams();
@@ -14,18 +14,18 @@ function EditCourse() {
   const [notice, setNotice] = useState("");
 
   useEffect(() => {
-    if (!db || !id) {
+    if (!rtdb || !id) {
       setNotice("No course selected.");
       return;
     }
     (async () => {
       try {
-        const snap = await getDoc(doc(db, "courses", id));
+        const snap = await get(ref(rtdb, "courses/" + id));
         if (!snap.exists()) {
           setNotice("That course no longer exists.");
           return;
         }
-        const d = snap.data() as Record<string, unknown>;
+        const d = (snap.val() || {}) as Record<string, unknown>;
         setInitial({
           title: String(d.title || ""),
           category: String(d.category || ""),
@@ -44,11 +44,11 @@ function EditCourse() {
   }, [id]);
 
   async function save(draft: CourseDraft) {
-    if (!db || !id) return;
+    if (!rtdb || !id) return;
     setBusy(true);
     setNotice("");
     try {
-      await updateDoc(doc(db, "courses", id), {
+      await update(ref(rtdb, "courses/" + id), {
         title: draft.title.trim(),
         category: draft.category.trim(),
         description: draft.description.trim(),
@@ -58,7 +58,7 @@ function EditCourse() {
         oldFee: toNumber(draft.oldFee),
         image: draft.image,
         status: draft.status,
-        updatedAt: serverTimestamp(),
+        updatedAt: rtdbTimestamp(),
       });
       window.location.assign((process.env.NEXT_PUBLIC_BASE_PATH || "") + "/admin/courses/");
     } catch {

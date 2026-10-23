@@ -21,7 +21,7 @@ export type AdminUser = {
   phone?: string;
   role?: string;
   status?: string;
-  createdAt?: { toDate?: () => Date } | null;
+  createdAt?: DateLike;
 };
 
 export type AdminEnquiry = {
@@ -31,7 +31,7 @@ export type AdminEnquiry = {
   phone?: string;
   company?: string;
   message?: string;
-  createdAt?: { toDate?: () => Date } | null;
+  createdAt?: DateLike;
 };
 
 export type AdminCourse = {
@@ -54,12 +54,21 @@ export type AdminPayment = {
   method?: string;
   utr?: string;
   status?: string;
-  date?: { toDate?: () => Date } | null;
+  date?: DateLike;
 };
 
-export function formatDate(value: AdminUser["createdAt"]): string {
+// Timestamps arrive either as a Firestore Timestamp or, from the Realtime
+// Database, as a plain number of milliseconds.
+export type DateLike = number | { toDate?: () => Date } | null | undefined;
+
+export function formatDate(value: DateLike): string {
   if (!value) return "-";
-  const d = typeof value.toDate === "function" ? value.toDate() : null;
-  if (!d) return "-";
+  const d =
+    typeof value === "number"
+      ? new Date(value)
+      : typeof value.toDate === "function"
+        ? value.toDate()
+        : null;
+  if (!d || Number.isNaN(d.getTime())) return "-";
   return d.toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" });
 }

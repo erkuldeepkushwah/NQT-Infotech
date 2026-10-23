@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { onAuthStateChanged, type User } from "firebase/auth";
 import { Panel, TableShell, EmptyRow, StatusPill } from "@/components/admin/ui";
 import { useCollection } from "@/lib/useCollection";
+import { useRtdbList } from "@/lib/useRtdb";
 import { auth } from "@/lib/firebase";
 import { img } from "@/lib/images";
 import { courses as siteCourses } from "@/lib/site";
@@ -48,9 +49,9 @@ export default function AdminDashboardPage() {
   const [queryTab, setQueryTab] = useState<"all" | "unread">("all");
 
   const users = useCollection<AdminUser>("users", 100);
-  const enquiries = useCollection<AdminEnquiry>("enquiries", 100);
+  const enquiries = useRtdbList<AdminEnquiry>("enquiries");
   const payments = useCollection<AdminPayment>("payments", 100);
-  const firestoreCourses = useCollection<AdminCourse>("courses", 100);
+  const liveCourses = useRtdbList<AdminCourse>("courses");
 
   useEffect(() => {
     if (!auth) return;
@@ -68,8 +69,8 @@ export default function AdminDashboardPage() {
   const shownPayments = paymentTab === "pending" ? pendingPayments : payments.rows;
 
   const courseRows: CourseRow[] =
-    firestoreCourses.rows.length > 0
-      ? firestoreCourses.rows.map((c) => ({
+    liveCourses.rows.length > 0
+      ? liveCourses.rows.map((c) => ({
           id: c.id,
           title: c.title || "Untitled",
           category: c.category,
@@ -215,9 +216,9 @@ export default function AdminDashboardPage() {
             </tr>
           ))}
         </TableShell>
-        {firestoreCourses.rows.length === 0 ? (
+        {liveCourses.rows.length === 0 ? (
           <p className="border-t border-slate-100 px-5 py-3 text-xs text-slate-500">
-            Showing the courses from the website. Import them into Firestore from the Courses page to edit them here.
+            Showing the courses from the website. Import them from the Courses page to manage them here.
           </p>
         ) : null}
       </Panel>

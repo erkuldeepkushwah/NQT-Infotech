@@ -1,7 +1,7 @@
 "use client";
 
 import CourseCard from "@/components/CourseCard";
-import { useCollection } from "@/lib/useCollection";
+import { useRtdbList } from "@/lib/useRtdb";
 import { courses as siteCourses } from "@/lib/site";
 import type { Course } from "@/lib/site";
 
@@ -18,7 +18,7 @@ type CourseRow = {
 };
 
 export default function BrowseCoursesPage() {
-  const { rows } = useCollection<CourseRow>("courses", 100);
+  const { rows } = useRtdbList<CourseRow>("courses");
 
   // Firestore courses win; otherwise show the catalogue built into the website.
   const catalogue: Course[] =

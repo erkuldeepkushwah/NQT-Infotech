@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import Icon from "@/components/Icon";
 import PageHero from "@/components/PageHero";
-import CourseCard from "@/components/CourseCard";
+import CourseGrid from "@/components/CourseGrid";
 import CTABand from "@/components/CTABand";
 import SectionHeading from "@/components/SectionHeading";
-import { courseBenefits, courses } from "@/lib/site";
+import { courseBenefits } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Courses",
@@ -18,11 +18,7 @@ export default function CoursesPage() {
       <PageHero title="Courses" />
 
       <section className="section">
-        <div className="container-x grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-          {courses.map((course) => (
-            <CourseCard key={course.title} course={course} />
-          ))}
-        </div>
+        <CourseGrid />
       </section>
 
       <section className="section bg-slate-50">
