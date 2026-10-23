@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { doc, serverTimestamp, setDoc } from "firebase/firestore";
-import { createUserAsAdmin, db, isFirebaseConfigured } from "@/lib/firebase";
+import { createUserAsAdmin, isFirebaseConfigured } from "@/lib/firebase";
+import { saveUserProfile } from "@/lib/profiles";
 
 export default function AddUserPage() {
   const [name, setName] = useState("");
@@ -33,22 +33,18 @@ export default function AddUserPage() {
     try {
       const uid = await createUserAsAdmin(email.trim(), password, name.trim());
 
-      // The sign-in account exists now; store the profile next to it.
-      if (db) {
-        try {
-          await setDoc(doc(db, "users", uid), {
-            name: name.trim(),
-            email: email.trim(),
-            phone: phone.trim(),
-            role: "user",
-            status: "active",
-            createdAt: serverTimestamp(),
-          });
-        } catch {
-          setNotice(
-            "The account was created, but the profile could not be saved. Publish the Firestore rules."
-          );
-        }
+      // The sign-in account exists now; store the profile next to it. A failed
+      // profile write must not hide the fact that the account was created.
+      try {
+        await saveUserProfile(uid, {
+          name: name.trim(),
+          email: email.trim(),
+          phone: phone.trim(),
+        });
+      } catch {
+        setNotice(
+          "The account was created, but its profile could not be saved. Check that the database exists and its rules are published."
+        );
       }
 
       setCreated(email.trim());

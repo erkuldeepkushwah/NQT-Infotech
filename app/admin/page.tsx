@@ -48,7 +48,7 @@ export default function AdminDashboardPage() {
   const [paymentTab, setPaymentTab] = useState<"pending" | "all">("pending");
   const [queryTab, setQueryTab] = useState<"all" | "unread">("all");
 
-  const users = useCollection<AdminUser>("users", 100);
+  const users = useRtdbList<AdminUser>("users");
   const enquiries = useRtdbList<AdminEnquiry>("enquiries");
   const payments = useCollection<AdminPayment>("payments", 100);
   const liveCourses = useRtdbList<AdminCourse>("courses");

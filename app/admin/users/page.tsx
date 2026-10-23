@@ -4,17 +4,33 @@ import Link from "next/link";
 import { useState } from "react";
 import { Panel, TableShell, EmptyRow, StatusPill } from "@/components/admin/ui";
 import { useCollection } from "@/lib/useCollection";
-import { formatDate, type AdminUser } from "@/lib/admin";
+import { useRtdbList } from "@/lib/useRtdb";
+import { formatDate, type AdminUser, type DateLike } from "@/lib/admin";
 
 export default function AdminUsersPage() {
-  const { rows, loading, error } = useCollection<AdminUser>("users", 200);
+  // Profiles go to the Realtime Database, with Firestore as a fallback.
+  const live = useRtdbList<AdminUser>("users");
+  const backup = useCollection<AdminUser>("users", 200);
+
+  const loading = live.loading && backup.loading;
+  const error = live.error && backup.error ? live.error : "";
+
+  const seen = new Set<string>();
+  const rows: AdminUser[] = [];
+  for (const list of [live.rows, backup.rows]) {
+    for (const u of list) {
+      const key = u.email || u.id;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      rows.push(u);
+    }
+  }
   const [query, setQuery] = useState("");
 
-  const sorted = [...rows].sort((a, b) => {
-    const at = a.createdAt?.toDate?.()?.getTime() ?? 0;
-    const bt = b.createdAt?.toDate?.()?.getTime() ?? 0;
-    return bt - at;
-  });
+  const stamp = (value: DateLike) =>
+    typeof value === "number" ? value : (value?.toDate?.()?.getTime() ?? 0);
+
+  const sorted = [...rows].sort((a, b) => stamp(b.createdAt) - stamp(a.createdAt));
 
   const term = query.trim().toLowerCase();
   const shown = term

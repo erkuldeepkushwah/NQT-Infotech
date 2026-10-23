@@ -1,5 +1,13 @@
 {
   "rules": {
+    "users": {
+      ".read": "auth != null && auth.token.email === 'brivora@gmail.com'",
+      "$uid": {
+        ".read": "auth != null && (auth.uid === $uid || auth.token.email === 'brivora@gmail.com')",
+        ".write": "auth != null && (auth.uid === $uid || auth.token.email === 'brivora@gmail.com')",
+        ".validate": "!newData.exists() || newData.hasChildren(['name', 'email'])"
+      }
+    },
     "enquiries": {
       ".read": "auth != null && auth.token.email === 'brivora@gmail.com'",
       "$id": {

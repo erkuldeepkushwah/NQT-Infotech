@@ -2,7 +2,6 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { doc, serverTimestamp, setDoc } from "firebase/firestore";
 import {
   browserLocalPersistence,
   browserSessionPersistence,
@@ -14,7 +13,8 @@ import {
   updateProfile,
   type User,
 } from "firebase/auth";
-import { auth, db, isFirebaseConfigured } from "@/lib/firebase";
+import { auth, isFirebaseConfigured } from "@/lib/firebase";
+import { saveUserProfile } from "@/lib/profiles";
 import { isAdminEmail } from "@/lib/admin";
 
 type Mode = "login" | "signup";
@@ -124,20 +124,12 @@ export default function LoginForm() {
       } catch {
         // not fatal - the account exists and they are signed in
       }
-      if (db) {
-        try {
-          // Profile document the admin area reads. Firestore rules only allow a
-          // user to create their own document, with role 'user'.
-          await setDoc(doc(db, "users", credential.user.uid), {
-            name: fullName,
-            email,
-            role: "user",
-            status: "active",
-            createdAt: serverTimestamp(),
-          });
-        } catch {
-          // not fatal - the account still works
-        }
+      try {
+        // Profile the admin area reads. Timed out internally, so a database that
+        // is not set up cannot leave sign-up hanging.
+        await saveUserProfile(credential.user.uid, { name: fullName, email });
+      } catch {
+        // not fatal - the account still works
       }
       form.reset();
       // onAuthStateChanged above takes over and redirects.
