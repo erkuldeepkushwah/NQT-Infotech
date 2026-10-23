@@ -43,23 +43,18 @@ export default function ContactForm() {
     }
   }
 
-  if (status === "sent") {
-    return (
-      <div className="rounded-xl border border-brand-100 bg-brand-50 p-8 text-center">
-        <h3 className="text-lg font-semibold text-navy-800">Message submitted</h3>
-        <p className="mt-2 text-sm text-slate-600">
-          Thank you! Your enquiry has been received. Our team will get back to you
-          within one working day.
-        </p>
-        <button type="button" onClick={() => setStatus("idle")} className="btn-ghost mt-5">
-          Send another message
-        </button>
-      </div>
-    );
-  }
-
   return (
-    <form onSubmit={handleSubmit} className="space-y-5">
+    <form
+      onSubmit={handleSubmit}
+      onChange={() => {
+        // Clear the last confirmation as soon as the form is touched again.
+        if (status !== "sending") {
+          setStatus("idle");
+          setNotice("");
+        }
+      }}
+      className="space-y-5"
+    >
       <div>
         <label htmlFor="fullname" className="field-label">Full name</label>
         <input id="fullname" name="fullname" required className="field" />
@@ -88,6 +83,12 @@ export default function ContactForm() {
       {status === "error" && notice ? (
         <p role="alert" className="rounded-md bg-red-50 px-4 py-3 text-sm text-red-700">
           {notice}
+        </p>
+      ) : null}
+
+      {status === "sent" ? (
+        <p role="status" className="text-sm font-medium text-green-700">
+          Message submitted. Our team will get back to you within one working day.
         </p>
       ) : null}
 
