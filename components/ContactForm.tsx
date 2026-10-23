@@ -46,10 +46,10 @@ export default function ContactForm() {
   if (status === "sent") {
     return (
       <div className="rounded-xl border border-brand-100 bg-brand-50 p-8 text-center">
-        <h3 className="text-lg font-semibold text-navy-800">Thank you!</h3>
+        <h3 className="text-lg font-semibold text-navy-800">Message submitted</h3>
         <p className="mt-2 text-sm text-slate-600">
-          Your enquiry has been received. Our team will get back to you within
-          one working day.
+          Thank you! Your enquiry has been received. Our team will get back to you
+          within one working day.
         </p>
         <button type="button" onClick={() => setStatus("idle")} className="btn-ghost mt-5">
           Send another message
@@ -91,8 +91,18 @@ export default function ContactForm() {
         </p>
       ) : null}
 
-      <button type="submit" disabled={status === "sending"} className="btn-primary w-full disabled:opacity-60">
-        {status === "sending" ? "Sending..." : "Send message"}
+      <button type="submit" disabled={status === "sending"} className="btn-primary w-full disabled:opacity-70">
+        {status === "sending" ? (
+          <>
+            <span
+              aria-hidden="true"
+              className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white"
+            />
+            Submitting...
+          </>
+        ) : (
+          "Submit"
+        )}
       </button>
     </form>
   );

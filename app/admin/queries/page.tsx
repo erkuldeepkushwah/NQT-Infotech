@@ -1,19 +1,50 @@
 "use client";
 
 import { Fragment, useState } from "react";
+import { deleteDoc, doc } from "firebase/firestore";
 import { Panel, TableShell, EmptyRow } from "@/components/admin/ui";
 import { useCollection } from "@/lib/useCollection";
 import { formatDate, type AdminEnquiry } from "@/lib/admin";
+import { db } from "@/lib/firebase";
 
 export default function AdminQueriesPage() {
   const { rows, loading, error } = useCollection<AdminEnquiry>("enquiries", 200);
   const [openId, setOpenId] = useState<string | null>(null);
+  const [removed, setRemoved] = useState<string[]>([]);
+  const [busyId, setBusyId] = useState<string | null>(null);
+  const [notice, setNotice] = useState("");
 
-  const sorted = [...rows].sort((a, b) => {
+  const visible = rows.filter((r) => !removed.includes(r.id));
+
+  const sorted = [...visible].sort((a, b) => {
     const at = a.createdAt?.toDate?.()?.getTime() ?? 0;
     const bt = b.createdAt?.toDate?.()?.getTime() ?? 0;
     return bt - at;
   });
+
+  async function remove(id: string, name: string) {
+    if (!db) {
+      setNotice("Firebase is not configured, so queries cannot be removed.");
+      return;
+    }
+    const ok = window.confirm(
+      "Delete the query from " + (name || "this sender") + "? This cannot be undone."
+    );
+    if (!ok) return;
+
+    setBusyId(id);
+    setNotice("");
+    try {
+      await deleteDoc(doc(db, "enquiries", id));
+      setRemoved((prev) => [...prev, id]);
+      if (openId === id) setOpenId(null);
+      setNotice("Query deleted.");
+    } catch {
+      setNotice("Could not delete this query. Check that you are signed in as an admin.");
+    } finally {
+      setBusyId(null);
+    }
+  }
 
   return (
     <>
@@ -22,7 +53,11 @@ export default function AdminQueriesPage() {
         Every enquiry submitted through the contact form on the website.
       </p>
 
-      <Panel title={"All queries (" + rows.length + ")"}>
+      {notice ? (
+        <p className="mt-4 rounded-md bg-slate-50 px-4 py-3 text-sm text-slate-700">{notice}</p>
+      ) : null}
+
+      <Panel title={"All queries (" + visible.length + ")"}>
         <TableShell headers={["Name", "Email", "Phone", "Company", "Received", ""]}>
           {loading ? (
             <EmptyRow colSpan={6} text="Loading queries..." />
@@ -43,19 +78,36 @@ export default function AdminQueriesPage() {
                   <td className="px-5 py-3 text-slate-600">{q.company || "-"}</td>
                   <td className="px-5 py-3 text-slate-600">{formatDate(q.createdAt)}</td>
                   <td className="px-5 py-3">
-                    <button
-                      type="button"
-                      onClick={() => setOpenId(openId === q.id ? null : q.id)}
-                      className="rounded-md border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-700 hover:border-brand-300 hover:text-brand-700"
-                    >
-                      {openId === q.id ? "Hide" : "Read"}
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setOpenId(openId === q.id ? null : q.id)}
+                        className="rounded-md border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-700 hover:border-brand-300 hover:text-brand-700"
+                      >
+                        {openId === q.id ? "Hide" : "Read"}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => remove(q.id, q.name || "")}
+                        disabled={busyId === q.id}
+                        className="rounded-md border border-red-200 px-3 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50 disabled:opacity-60"
+                      >
+                        {busyId === q.id ? "Deleting..." : "Delete"}
+                      </button>
+                    </div>
                   </td>
                 </tr>
                 {openId === q.id ? (
                   <tr className="border-b border-slate-50 bg-slate-50">
                     <td colSpan={6} className="px-5 py-4 text-sm text-slate-700">
-                      {q.message || "(no message)"}
+                      <p className="whitespace-pre-wrap">{q.message || "(no message)"}</p>
+                      <p className="mt-3 text-xs text-slate-500">
+                        Reply to{" "}
+                        <a href={"mailto:" + (q.email || "")} className="font-medium text-brand-600 hover:underline">
+                          {q.email || "-"}
+                        </a>
+                        {q.phone ? " · " + q.phone : ""}
+                      </p>
                     </td>
                   </tr>
                 ) : null}
