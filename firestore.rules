@@ -54,7 +54,15 @@ service cloud.firestore {
       allow read: if request.auth != null
         && (request.auth.uid == uid || isAdmin());
 
-      allow update, delete: if isAdmin();
+      // A signed-in user may edit their own profile and preferences, but never
+      // their own role or status - those stay admin-only.
+      allow update: if isAdmin()
+        || (request.auth != null
+            && request.auth.uid == uid
+            && request.resource.data.diff(resource.data).affectedKeys()
+                 .hasOnly(['name', 'phone', 'email', 'notifications', 'preferences']));
+
+      allow delete: if isAdmin();
     }
 
     // --------------------------------------------------------------- courses
