@@ -67,6 +67,8 @@ const WITH_PHOTO = [
 export function img(seed: string, w: number, h: number): string {
   void w;
   void h;
+  // Courses created in the admin panel may carry a full image URL.
+  if (/^https?:\/\//i.test(seed)) return seed;
   return BASE + (WITH_PHOTO.indexOf(seed) !== -1
     ? "/img/" + seed + ".jpg"
     : "/img/" + seed + ".svg");
