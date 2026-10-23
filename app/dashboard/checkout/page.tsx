@@ -4,10 +4,10 @@ import Link from "next/link";
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { onAuthStateChanged, type User } from "firebase/auth";
-import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { QRCodeSVG } from "qrcode.react";
-import { auth, db } from "@/lib/firebase";
+import { auth } from "@/lib/firebase";
 import { upiLink, usePaymentSettings } from "@/lib/payment";
+import { submitPayment } from "@/lib/payments";
 import { courses } from "@/lib/site";
 import { img } from "@/lib/images";
 
@@ -129,24 +129,23 @@ function Checkout() {
     setStatus("saving");
     setMessage("");
     try {
-      if (db) {
-        await addDoc(collection(db, "payments"), {
-          // firestore.rules requires the writer's uid on every payment.
-          uid: user?.uid || "",
-          studentName: user?.displayName || user?.email || "",
-          studentEmail: user?.email || "",
-          courseTitle: course.title,
-          amount: price,
-          method: tab === "upi" ? "UPI" : "Net Banking",
-          utr: clean,
-          status: "Pending",
-          date: serverTimestamp(),
-        });
-      }
+      await submitPayment({
+        uid: user.uid,
+        studentName: user.displayName || user.email || "",
+        studentEmail: user.email || "",
+        courseTitle: course.title,
+        amount: price,
+        method: tab === "upi" ? "UPI" : "Net Banking",
+        utr: clean,
+      });
       setStatus("done");
     } catch (error) {
       setStatus("error");
-      setMessage("Could not save the payment. Please try again or email " + settings.supportEmail + ".");
+      setMessage(
+        "Could not save the payment. Please try again, or email " +
+          settings.supportEmail +
+          " with your reference number."
+      );
     }
   }
 

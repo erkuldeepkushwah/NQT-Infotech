@@ -1,20 +1,50 @@
 "use client";
 
 import { useState } from "react";
+import { ref, update as rtdbUpdate } from "firebase/database";
 import { doc, serverTimestamp, updateDoc } from "firebase/firestore";
 import { Panel, StatCard, TableShell, EmptyRow, StatusPill } from "@/components/admin/ui";
+import { useRtdbList } from "@/lib/useRtdb";
 import { useCollection } from "@/lib/useCollection";
-import { formatDate, type AdminPayment } from "@/lib/admin";
-import { db } from "@/lib/firebase";
+import { formatDate, type AdminPayment, type DateLike } from "@/lib/admin";
+import { db, rtdb } from "@/lib/firebase";
+
+type Row = AdminPayment & { source: "rtdb" | "firestore" };
+
+function stamp(value: DateLike): number {
+  if (!value) return 0;
+  if (typeof value === "number") return value;
+  return value.toDate?.()?.getTime() ?? 0;
+}
 
 export default function AdminPaymentsPage() {
-  const { rows, loading, error } = useCollection<AdminPayment>("payments", 200);
+  // Payments go to the Realtime Database, with Firestore as a fallback - read both.
+  const live = useRtdbList<AdminPayment>("payments");
+  const backup = useCollection<AdminPayment>("payments", 200);
+
   const [overrides, setOverrides] = useState<Record<string, string>>({});
   const [busyId, setBusyId] = useState<string | null>(null);
   const [notice, setNotice] = useState("");
 
-  const statusOf = (p: AdminPayment) => overrides[p.id] ?? p.status ?? "Pending";
+  const loading = live.loading && backup.loading;
+  const error = live.error && backup.error ? live.error : "";
 
+  const seen = new Set<string>();
+  const rows: Row[] = [];
+  for (const [list, source] of [
+    [live.rows, "rtdb"],
+    [backup.rows, "firestore"],
+  ] as const) {
+    for (const p of list) {
+      const key = [p.utr || "", p.courseTitle || "", p.amount || 0, p.studentEmail || ""].join("|");
+      if (seen.has(key)) continue;
+      seen.add(key);
+      rows.push({ ...p, source });
+    }
+  }
+  rows.sort((a, b) => stamp(b.date) - stamp(a.date));
+
+  const statusOf = (p: Row) => overrides[p.source + "-" + p.id] ?? p.status ?? "Pending";
   const pending = rows.filter((p) => statusOf(p).toLowerCase() === "pending").length;
   const approved = rows.filter((p) => statusOf(p).toLowerCase() === "approved").length;
   const rejected = rows.filter((p) => statusOf(p).toLowerCase() === "rejected").length;
@@ -22,11 +52,7 @@ export default function AdminPaymentsPage() {
     .filter((p) => statusOf(p).toLowerCase() === "approved")
     .reduce((sum, p) => sum + (p.amount || 0), 0);
 
-  async function mark(p: AdminPayment, next: "Approved" | "Rejected") {
-    if (!db) {
-      setNotice("Firebase is not configured, so requests cannot be updated.");
-      return;
-    }
+  async function mark(p: Row, next: "Approved" | "Rejected") {
     if (next === "Rejected") {
       const ok = window.confirm(
         "Mark the request from " + (p.studentName || "this student") + " as failed?"
@@ -36,11 +62,17 @@ export default function AdminPaymentsPage() {
     setBusyId(p.id);
     setNotice("");
     try {
-      await updateDoc(doc(db, "payments", p.id), {
-        status: next,
-        reviewedAt: serverTimestamp(),
-      });
-      setOverrides((o) => ({ ...o, [p.id]: next }));
+      if (p.source === "rtdb") {
+        if (!rtdb) throw new Error("no rtdb");
+        await rtdbUpdate(ref(rtdb, "payments/" + p.id), {
+          status: next,
+          reviewedAt: Date.now(),
+        });
+      } else {
+        if (!db) throw new Error("no firestore");
+        await updateDoc(doc(db, "payments", p.id), { status: next, reviewedAt: serverTimestamp() });
+      }
+      setOverrides((o) => ({ ...o, [p.source + "-" + p.id]: next }));
       setNotice("Request marked " + next.toLowerCase() + ".");
     } catch {
       setNotice("Could not update the request. Check that you are signed in as an admin.");
@@ -53,8 +85,8 @@ export default function AdminPaymentsPage() {
     <>
       <h1 className="text-2xl font-bold text-navy-800">Payments</h1>
       <p className="mt-1 text-sm text-slate-600">
-        Course fee payments submitted by students. Approve a request to confirm it, or
-        mark it failed if the payment did not arrive.
+        Course fee payments submitted by students. Approve a request to confirm it, or mark
+        it failed if the payment did not arrive.
       </p>
 
       <div className="mt-6 grid gap-4 sm:grid-cols-4">
@@ -90,7 +122,7 @@ export default function AdminPaymentsPage() {
               const status = statusOf(p);
               const low = status.toLowerCase();
               return (
-                <tr key={p.id} className="border-b border-slate-50 last:border-0">
+                <tr key={p.source + "-" + p.id} className="border-b border-slate-50 last:border-0">
                   <td className="px-5 py-3 font-medium text-navy-800">{p.studentName || "-"}</td>
                   <td className="px-5 py-3 text-slate-600">{p.courseTitle || "-"}</td>
                   <td className="px-5 py-3 text-slate-600">
@@ -128,8 +160,7 @@ export default function AdminPaymentsPage() {
           )}
         </TableShell>
         <p className="border-t border-slate-100 px-5 py-3 text-xs text-slate-500">
-          Approving confirms the payment; failing marks it as not received. Students see the
-          status on their own dashboard.
+          Approving confirms the payment; failing marks it as not received.
         </p>
       </Panel>
     </>

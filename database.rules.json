@@ -14,6 +14,13 @@
         ".validate": "!newData.exists() || (newData.hasChildren(['title']) && newData.child('title').isString())"
       }
     },
+    "payments": {
+      ".read": "auth != null && auth.token.email === 'brivora@gmail.com'",
+      "$id": {
+        ".write": "auth != null && (auth.token.email === 'brivora@gmail.com' || !data.exists())",
+        ".validate": "!newData.exists() || (newData.hasChildren(['uid', 'courseTitle', 'amount', 'utr']) && newData.child('amount').isNumber() && newData.child('utr').isString() && newData.child('utr').val().length <= 20)"
+      }
+    },
     "settings": {
       ".read": true,
       ".write": "auth != null && auth.token.email === 'brivora@gmail.com'"
