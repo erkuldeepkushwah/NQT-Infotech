@@ -102,8 +102,7 @@ export default function AdminQueriesPage() {
 
       {live.error && !live.loading ? (
         <p className="mt-4 rounded-md bg-amber-50 px-4 py-3 text-xs text-amber-800">
-          {live.error} New enquiries are being saved to Firestore in the meantime, so nothing
-          is lost.
+          Realtime Database: {live.error}
         </p>
       ) : null}
 

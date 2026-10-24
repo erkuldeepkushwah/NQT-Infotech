@@ -55,6 +55,12 @@ export default function AdminUsersPage() {
         </Link>
       </div>
 
+      {live.error && !live.loading ? (
+        <p className="mt-4 rounded-md bg-amber-50 px-4 py-3 text-xs text-amber-800">
+          Realtime Database: {live.error}
+        </p>
+      ) : null}
+
       <Panel
         title={"All registered users (" + rows.length + ")"}
         action={
