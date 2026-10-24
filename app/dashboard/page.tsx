@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { onAuthStateChanged, type User } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { useCollection } from "@/lib/useCollection";
+import { slugify } from "@/lib/slug";
 
 type Enrollment = {
   id: string;
@@ -117,7 +118,7 @@ export default function StudentDashboardPage() {
           <p className="mt-4 text-sm font-semibold text-white">{current.courseTitle}</p>
         ) : null}
         <Link
-          href="/dashboard/courses"
+          href={current?.courseTitle ? "/dashboard/courses/" + slugify(current.courseTitle) : "/dashboard/courses"}
           className="btn mt-5 bg-white text-brand-700 hover:bg-brand-50"
         >
           Continue Learning
@@ -217,10 +218,16 @@ export default function StudentDashboardPage() {
                 </div>
 
                 <div className="mt-4 flex flex-wrap gap-3">
-                  <Link href="/dashboard/courses" className="btn-primary px-4 py-2 text-sm">
+                  <Link
+                    href={"/dashboard/courses/" + slugify(e.courseTitle || "")}
+                    className="btn-primary px-4 py-2 text-sm"
+                  >
                     Continue Learning
                   </Link>
-                  <Link href="/dashboard/courses" className="btn-ghost px-3 py-2 text-sm">
+                  <Link
+                    href={"/dashboard/courses/" + slugify(e.courseTitle || "")}
+                    className="btn-ghost px-3 py-2 text-sm"
+                  >
                     View Course
                   </Link>
                 </div>

@@ -67,12 +67,12 @@ export default function MyCoursesPage() {
       </p>
 
       <Panel title={"Purchased courses (" + purchased.length + ")"}>
-        <TableShell headers={["Course", "Category", "Level", "Duration", "Paid", "Status"]}>
+        <TableShell headers={["Course", "Category", "Level", "Duration", "Paid", "Status", "Action"]}>
           {loading ? (
-            <EmptyRow colSpan={6} text="Loading your courses..." />
+            <EmptyRow colSpan={7} text="Loading your courses..." />
           ) : purchased.length === 0 ? (
             <EmptyRow
-              colSpan={6}
+              colSpan={7}
               text="You have not purchased a course yet. Browse the catalogue and enrol to get started."
             />
           ) : (
@@ -89,6 +89,14 @@ export default function MyCoursesPage() {
                 </td>
                 <td className="px-5 py-3">
                   <StatusPill status="Approved" />
+                </td>
+                <td className="px-5 py-3">
+                  <Link
+                    href={"/dashboard/courses/" + c.id}
+                    className="font-medium text-brand-600 hover:underline"
+                  >
+                    Continue →
+                  </Link>
                 </td>
               </tr>
             ))
