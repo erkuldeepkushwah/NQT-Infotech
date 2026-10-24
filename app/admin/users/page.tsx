@@ -14,6 +14,11 @@ export default function AdminUsersPage() {
   const live = useRtdbList<AdminUser>("users");
   const backup = useCollection<AdminUser>("users", 200);
 
+  const [query, setQuery] = useState("");
+  const [removed, setRemoved] = useState<string[]>([]);
+  const [busyId, setBusyId] = useState<string | null>(null);
+  const [notice, setNotice] = useState("");
+
   const loading = live.loading && backup.loading;
   const error = live.error && backup.error ? live.error : "";
 
@@ -27,8 +32,6 @@ export default function AdminUsersPage() {
       all.push(u);
     }
   }
-
-  const rows = all.filter((u) => !removed.includes(u.id));
 
   async function removeUser(u: AdminUser) {
     if (!rtdb) {
@@ -59,10 +62,8 @@ export default function AdminUsersPage() {
       setBusyId(null);
     }
   }
-  const [query, setQuery] = useState("");
-  const [removed, setRemoved] = useState<string[]>([]);
-  const [busyId, setBusyId] = useState<string | null>(null);
-  const [notice, setNotice] = useState("");
+
+  const rows = all.filter((u) => !removed.includes(u.id));
 
   const stamp = (value: DateLike) =>
     typeof value === "number" ? value : (value?.toDate?.()?.getTime() ?? 0);
