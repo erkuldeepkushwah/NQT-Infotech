@@ -1,13 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { ref, update as rtdbUpdate } from "firebase/database";
+import { ref, set as rtdbSet, update as rtdbUpdate } from "firebase/database";
 import { doc, serverTimestamp, updateDoc } from "firebase/firestore";
 import { Panel, StatCard, TableShell, EmptyRow, StatusPill } from "@/components/admin/ui";
 import { useRtdbList } from "@/lib/useRtdb";
 import { useCollection } from "@/lib/useCollection";
 import { formatDate, type AdminPayment, type DateLike } from "@/lib/admin";
 import { db, rtdb } from "@/lib/firebase";
+import { slugify } from "@/lib/slug";
 
 type Row = AdminPayment & { source: "rtdb" | "firestore" };
 
@@ -25,6 +26,7 @@ export default function AdminPaymentsPage() {
   const [overrides, setOverrides] = useState<Record<string, string>>({});
   const [busyId, setBusyId] = useState<string | null>(null);
   const [notice, setNotice] = useState("");
+  const [showHandled, setShowHandled] = useState(false);
 
   const loading = live.loading && backup.loading;
   const error = live.error && backup.error ? live.error : "";
@@ -52,6 +54,10 @@ export default function AdminPaymentsPage() {
     .filter((p) => statusOf(p).toLowerCase() === "approved")
     .reduce((sum, p) => sum + (p.amount || 0), 0);
 
+  // A request leaves the queue once it has been approved or failed.
+  const waiting = rows.filter((p) => statusOf(p).toLowerCase() === "pending");
+  const shown = showHandled ? rows : waiting;
+
   async function mark(p: Row, next: "Approved" | "Rejected") {
     if (next === "Rejected") {
       const ok = window.confirm(
@@ -72,8 +78,24 @@ export default function AdminPaymentsPage() {
         if (!db) throw new Error("no firestore");
         await updateDoc(doc(db, "payments", p.id), { status: next, reviewedAt: serverTimestamp() });
       }
+      // Approving grants the course: it moves into the student's "My courses".
+      let granted = "";
+      if (next === "Approved" && p.uid && rtdb) {
+        try {
+          await rtdbSet(ref(rtdb, "enrollments/" + p.uid + "/" + slugify(p.courseTitle || "")), {
+            courseTitle: p.courseTitle || "",
+            amount: p.amount || 0,
+            utr: p.utr || "",
+            approvedAt: Date.now(),
+          });
+          granted = " The course was added to their My courses.";
+        } catch {
+          granted = " Could not add the course to their My courses.";
+        }
+      }
+
       setOverrides((o) => ({ ...o, [p.source + "-" + p.id]: next }));
-      setNotice("Request marked " + next.toLowerCase() + ".");
+      setNotice("Request marked " + next.toLowerCase() + "." + granted);
     } catch {
       setNotice("Could not update the request. Check that you are signed in as an admin.");
     } finally {
@@ -104,7 +126,18 @@ export default function AdminPaymentsPage() {
         <p className="mt-4 rounded-md bg-slate-50 px-4 py-3 text-sm text-slate-700">{notice}</p>
       ) : null}
 
-      <Panel title={"Payment requests (" + rows.length + ")"}>
+      <Panel
+        title={"Payment requests (" + waiting.length + " waiting)"}
+        action={
+          <button
+            type="button"
+            onClick={() => setShowHandled((v) => !v)}
+            className="btn-ghost px-4 py-2 text-sm"
+          >
+            {showHandled ? "Show waiting only" : "Show handled too"}
+          </button>
+        }
+      >
         <TableShell
           headers={["Student", "Course", "Amount", "Method", "UTR", "Date", "Status", ""]}
         >
@@ -112,13 +145,17 @@ export default function AdminPaymentsPage() {
             <EmptyRow colSpan={8} text="Loading payments..." />
           ) : error ? (
             <EmptyRow colSpan={8} text={error} />
-          ) : rows.length === 0 ? (
+          ) : shown.length === 0 ? (
             <EmptyRow
               colSpan={8}
-              text="No payment requests yet. They appear here as soon as a student submits one from the checkout page."
+              text={
+                rows.length === 0
+                  ? "No payment requests yet. They appear here as soon as a student submits one from the checkout page."
+                  : "Nothing waiting. Use “Show handled too” to see approved and failed requests."
+              }
             />
           ) : (
-            rows.map((p) => {
+            shown.map((p) => {
               const status = statusOf(p);
               const low = status.toLowerCase();
               return (
@@ -160,7 +197,8 @@ export default function AdminPaymentsPage() {
           )}
         </TableShell>
         <p className="border-t border-slate-100 px-5 py-3 text-xs text-slate-500">
-          Approving confirms the payment; failing marks it as not received.
+          Approving confirms the payment and adds the course to the student's My courses;
+          failing marks it as not received. Either way the request leaves the queue.
         </p>
       </Panel>
     </>

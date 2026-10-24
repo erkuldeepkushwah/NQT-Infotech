@@ -48,6 +48,7 @@ export type AdminCourse = {
 
 export type AdminPayment = {
   id: string;
+  uid?: string;
   studentEmail?: string;
   studentName?: string;
   courseTitle?: string;

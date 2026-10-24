@@ -1,18 +1,19 @@
 "use client";
 
 import Link from "next/link";
-import { Panel, TableShell, EmptyRow } from "@/components/admin/ui";
+import { Panel, TableShell, EmptyRow, StatusPill } from "@/components/admin/ui";
 import { useRtdbList } from "@/lib/useRtdb";
+import { useCurrentUser } from "@/lib/useCurrentUser";
+import { useMyEnrollments } from "@/lib/enrollments";
 import { courses as siteCourses } from "@/lib/site";
 
-type Course = {
+type CourseRow = {
   id: string;
-  title: string;
+  title?: string;
   category?: string;
   level?: string;
   duration?: string;
   fee?: number;
-  oldFee?: number;
 };
 
 function toNumber(value: string): number {
@@ -20,45 +21,62 @@ function toNumber(value: string): number {
 }
 
 export default function MyCoursesPage() {
-  const { rows } = useRtdbList<Course>("courses");
+  const { user, ready } = useCurrentUser();
+  const { rows: enrollments, loading: enrollLoading } = useMyEnrollments(user?.uid || "");
+  const { rows: liveCourses } = useRtdbList<CourseRow>("courses");
 
-  // Fall back to the courses built into the website so the catalogue is never
-  // empty for a signed-in student.
-  const courses: Course[] =
-    rows.length > 0
-      ? rows.map((c) => ({
-          id: c.id,
-          title: c.title || "Untitled course",
-          category: c.category,
-          level: c.level,
-          duration: c.duration,
-          fee: c.fee,
-          oldFee: c.oldFee,
-        }))
-      : siteCourses.map((c) => ({
-          id: "site-" + c.title,
-          title: c.title,
-          category: c.category,
-          level: c.level,
-          duration: c.duration,
-          fee: toNumber(c.price),
-          oldFee: toNumber(c.oldPrice),
-        }));
+  // Catalogue details, keyed by slug so an enrollment can be matched to a course.
+  const catalogue = new Map<string, CourseRow>();
+  for (const c of liveCourses) {
+    catalogue.set(c.id, c);
+  }
+  for (const c of siteCourses) {
+    const slug = c.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+    if (!catalogue.has(slug)) {
+      catalogue.set(slug, {
+        id: slug,
+        title: c.title,
+        category: c.category,
+        level: c.level,
+        duration: c.duration,
+        fee: toNumber(c.price),
+      });
+    }
+  }
+
+  const purchased = enrollments.map((e) => {
+    const detail = catalogue.get(e.id);
+    return {
+      id: e.id,
+      title: e.courseTitle || detail?.title || "Course",
+      category: detail?.category,
+      level: detail?.level,
+      duration: detail?.duration,
+      amount: e.amount ?? detail?.fee,
+      approvedAt: e.approvedAt,
+    };
+  });
+
+  const loading = !ready || enrollLoading;
 
   return (
     <>
       <h1 className="text-2xl font-bold text-navy-800">My courses</h1>
       <p className="mt-1 text-sm text-slate-600">
-        The courses you can enrol in, with fees. Progress tracking arrives with the next
-        phase.
+        The courses you have purchased. A course appears here once your payment is approved.
       </p>
 
-      <Panel title={"Course catalogue (" + courses.length + ")"}>
-        <TableShell headers={["Course", "Category", "Level", "Duration", "Fee", ""]}>
-          {courses.length === 0 ? (
-            <EmptyRow colSpan={6} text="No courses are published yet. Please check back soon." />
+      <Panel title={"Purchased courses (" + purchased.length + ")"}>
+        <TableShell headers={["Course", "Category", "Level", "Duration", "Paid", "Status"]}>
+          {loading ? (
+            <EmptyRow colSpan={6} text="Loading your courses..." />
+          ) : purchased.length === 0 ? (
+            <EmptyRow
+              colSpan={6}
+              text="You have not purchased a course yet. Browse the catalogue and enrol to get started."
+            />
           ) : (
-            courses.map((c) => (
+            purchased.map((c) => (
               <tr key={c.id} className="border-b border-slate-50 last:border-0">
                 <td className="px-5 py-3 font-medium text-navy-800">{c.title}</td>
                 <td className="px-5 py-3 text-slate-600">{c.category || "-"}</td>
@@ -66,26 +84,23 @@ export default function MyCoursesPage() {
                 <td className="px-5 py-3 text-slate-600">{c.duration || "-"}</td>
                 <td className="px-5 py-3">
                   <span className="font-semibold text-navy-800">
-                    {c.fee ? "₹" + c.fee.toLocaleString("en-IN") : "-"}
+                    {c.amount ? "₹" + c.amount.toLocaleString("en-IN") : "-"}
                   </span>
-                  {c.oldFee ? (
-                    <span className="ml-2 text-xs text-slate-400 line-through">
-                      ₹{c.oldFee.toLocaleString("en-IN")}
-                    </span>
-                  ) : null}
                 </td>
                 <td className="px-5 py-3">
-                  <Link
-                    href="/contact"
-                    className="rounded-md border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-700 hover:border-brand-300 hover:text-brand-700"
-                  >
-                    Enquire
-                  </Link>
+                  <StatusPill status="Approved" />
                 </td>
               </tr>
             ))
           )}
         </TableShell>
+        {!loading && purchased.length === 0 ? (
+          <p className="border-t border-slate-100 px-5 py-3 text-xs text-slate-500">
+            <Link href="/dashboard/browse" className="font-medium text-brand-600 hover:underline">
+              Browse courses →
+            </Link>
+          </p>
+        ) : null}
       </Panel>
     </>
   );

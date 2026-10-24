@@ -8,6 +8,14 @@
         ".validate": "!newData.exists() || newData.hasChild('preferences') || newData.hasChildren(['name', 'email'])"
       }
     },
+    "enrollments": {
+      ".read": "auth != null && auth.token.email === 'brivora@gmail.com'",
+      "$uid": {
+        ".read": "auth != null && (auth.uid === $uid || auth.token.email === 'brivora@gmail.com')",
+        ".write": "auth != null && auth.token.email === 'brivora@gmail.com'",
+        ".validate": "!newData.exists() || newData.hasChildren(['courseTitle'])"
+      }
+    },
     "enquiries": {
       ".read": "auth != null && auth.token.email === 'brivora@gmail.com'",
       "$id": {
