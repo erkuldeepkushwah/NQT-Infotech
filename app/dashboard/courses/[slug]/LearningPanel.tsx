@@ -9,7 +9,7 @@ import { slugify } from "@/lib/slug";
 import { courses as siteCourses } from "@/lib/site";
 import { flatten, syllabusFor, totalLessons } from "@/lib/syllabus";
 import { questionsFor, subjectOf, type QA } from "@/lib/questions";
-import { askGemini, geminiConfigured } from "@/lib/ai";
+import { askGemini, aiConfigured } from "@/lib/ai";
 
 const TASK_LABELS = ["Review component notes", "Complete quick quiz"];
 const TASK_MINUTES = [5, 2];
@@ -186,7 +186,7 @@ export default function LearningPanel() {
 
     // Prefer the AI Professor when a Gemini key is configured; fall back to the
     // built-in question bank otherwise (or if the call fails).
-    if (geminiConfigured) {
+    if (aiConfigured) {
       setThinking(true);
       setReply(null);
       setAiAnswer("");
