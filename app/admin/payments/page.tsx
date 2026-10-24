@@ -179,24 +179,32 @@ export default function AdminPaymentsPage() {
                     <StatusPill status={status} />
                   </td>
                   <td className="px-5 py-3">
-                    <div className="flex items-center gap-2">
-                      <button
-                        type="button"
-                        onClick={() => mark(p, "Approved")}
-                        disabled={busyId === p.id || low === "approved"}
-                        className="rounded-md border border-green-200 px-3 py-1.5 text-xs font-medium text-green-700 hover:bg-green-50 disabled:opacity-40"
-                      >
-                        Approve
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => mark(p, "Rejected")}
-                        disabled={busyId === p.id || low === "rejected"}
-                        className="rounded-md border border-red-200 px-3 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50 disabled:opacity-40"
-                      >
-                        Fail
-                      </button>
-                    </div>
+                    {/* Once a request is approved or failed it is settled, so no
+                        further action is offered. */}
+                    {low === "pending" ? (
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => mark(p, "Approved")}
+                          disabled={busyId === p.id}
+                          className="rounded-md border border-green-200 px-3 py-1.5 text-xs font-medium text-green-700 hover:bg-green-50 disabled:opacity-40"
+                        >
+                          {busyId === p.id ? "Saving..." : "Approve"}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => mark(p, "Rejected")}
+                          disabled={busyId === p.id}
+                          className="rounded-md border border-red-200 px-3 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50 disabled:opacity-40"
+                        >
+                          Fail
+                        </button>
+                      </div>
+                    ) : (
+                      <span className="text-xs text-slate-400">
+                        {low === "approved" ? "Course granted" : "No action"}
+                      </span>
+                    )}
                   </td>
                 </tr>
               );
