@@ -191,7 +191,7 @@ export default function LearningPanel() {
       setReply(null);
       setAiAnswer("");
       setNoMatch(false);
-      const result = await askGemini(q, subjectOf(lesson.title));
+      const result = await askGemini(q, { topic: subjectOf(lesson.title) });
       setThinking(false);
       if (result) {
         setAiAnswer(result.text);

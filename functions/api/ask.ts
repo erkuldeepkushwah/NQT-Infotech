@@ -5,7 +5,7 @@
 // variables) as a secret named GEMINI_API_KEY, and optionally GEMINI_MODEL.
 //
 // If the key is not set the endpoint answers 503 and the client falls back to
-// its built-in question bank.
+// its own content.
 
 interface Env {
   GEMINI_API_KEY?: string;
@@ -15,11 +15,23 @@ interface Env {
 interface AskBody {
   question?: string;
   topic?: string;
+  persona?: string;
 }
 
 type GeminiResponse = {
   candidates?: { content?: { parts?: { text?: string }[] } }[];
 };
+
+// Personas are fixed here, keyed by id, so the client cannot send its own
+// system instructions.
+const PERSONAS: Record<string, string> = {
+  web: "You are Prof. Meera Rao, a patient senior instructor in web and frontend development (HTML, CSS, JavaScript, React). Answer clearly, use small concrete examples, and keep a friendly tone.",
+  data: "You are Prof. Arjun Nair, a senior instructor in data and backend development (Node.js, APIs, databases, analytics). Answer clearly with practical examples.",
+  career: "You are Prof. Sara Khan, a career and interview coach for technology students. Give practical, encouraging and specific advice.",
+};
+
+const DEFAULT_PERSONA =
+  "You are a friendly, experienced instructor helping a student on a technology course.";
 
 function json(data: unknown, status = 200): Response {
   return new Response(JSON.stringify(data), {
@@ -48,6 +60,7 @@ export const onRequestPost = async (context: {
   const topic = (body.topic || "").trim();
   if (!question) return json({ error: "bad_request" }, 400);
 
+  const persona = PERSONAS[body.persona || ""] || DEFAULT_PERSONA;
   const model = env.GEMINI_MODEL || "gemini-2.0-flash";
   const url =
     "https://generativelanguage.googleapis.com/v1beta/models/" +
@@ -56,9 +69,9 @@ export const onRequestPost = async (context: {
     encodeURIComponent(key);
 
   const prompt =
-    'You are a friendly instructor for the topic "' +
-    topic +
-    '". Answer the student\'s question in 2-4 short sentences, then add one line starting with "Why it matters:".\n\nStudent question: ' +
+    persona +
+    (topic ? ' The student is studying "' + topic + '".' : "") +
+    ' Answer the student\'s question in 2-4 short sentences, then add one line starting with "Why it matters:".\n\nStudent question: ' +
     question;
 
   let res: Response;
