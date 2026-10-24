@@ -9,6 +9,7 @@ import { slugify } from "@/lib/slug";
 import { courses as siteCourses } from "@/lib/site";
 import { flatten, syllabusFor, totalLessons } from "@/lib/syllabus";
 import { questionsFor, subjectOf, type QA } from "@/lib/questions";
+import { askGemini, geminiConfigured } from "@/lib/ai";
 
 const TASK_LABELS = ["Review component notes", "Complete quick quiz"];
 const TASK_MINUTES = [5, 2];
@@ -43,6 +44,8 @@ export default function LearningPanel() {
   // AI Professor: the student's question, and the answer it matched.
   const [ask, setAsk] = useState("");
   const [reply, setReply] = useState<QA | null>(null);
+  const [aiAnswer, setAiAnswer] = useState("");
+  const [thinking, setThinking] = useState(false);
   const [noMatch, setNoMatch] = useState(false);
 
   const storageKey = "brivora:learning:" + slug;
@@ -111,6 +114,8 @@ export default function LearningPanel() {
     setRevealed([]);
     setAsk("");
     setReply(null);
+    setAiAnswer("");
+    setThinking(false);
     setNoMatch(false);
   }, [current]);
 
@@ -175,15 +180,33 @@ export default function LearningPanel() {
     setRevealed(allRevealed ? [] : questions.map((_, i) => i));
   }
 
-  function askProfessor() {
+  async function askProfessor() {
     const q = ask.trim();
     if (!q) return;
+
+    // Prefer the AI Professor when a Gemini key is configured; fall back to the
+    // built-in question bank otherwise (or if the call fails).
+    if (geminiConfigured) {
+      setThinking(true);
+      setReply(null);
+      setAiAnswer("");
+      setNoMatch(false);
+      const result = await askGemini(q, subjectOf(lesson.title));
+      setThinking(false);
+      if (result) {
+        setAiAnswer(result.text);
+        return;
+      }
+    }
+
     const match = bestMatch(q, questions);
     if (match) {
       setReply(match);
+      setAiAnswer("");
       setNoMatch(false);
     } else {
       setReply(null);
+      setAiAnswer("");
       setNoMatch(true);
     }
   }
@@ -266,12 +289,27 @@ export default function LearningPanel() {
                 />
                 <button
                   type="submit"
-                  disabled={!ask.trim()}
+                  disabled={!ask.trim() || thinking}
                   className="btn-primary px-5 py-2.5 disabled:opacity-50"
                 >
-                  Ask
+                  {thinking ? "Thinking…" : "Ask"}
                 </button>
               </form>
+
+              {thinking ? (
+                <p className="mt-3 rounded-lg border border-brand-100 bg-white p-3 text-sm text-slate-500">
+                  AI Professor is thinking…
+                </p>
+              ) : null}
+
+              {aiAnswer ? (
+                <div className="mt-3 rounded-lg border border-brand-100 bg-white p-3">
+                  <p className="text-[11px] font-semibold uppercase tracking-wide text-brand-600">
+                    AI Professor
+                  </p>
+                  <p className="mt-1 whitespace-pre-line text-sm text-slate-700">{aiAnswer}</p>
+                </div>
+              ) : null}
 
               {reply ? (
                 <div className="mt-3 rounded-lg border border-brand-100 bg-white p-3">
