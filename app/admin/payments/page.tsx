@@ -26,7 +26,7 @@ export default function AdminPaymentsPage() {
   const [overrides, setOverrides] = useState<Record<string, string>>({});
   const [busyId, setBusyId] = useState<string | null>(null);
   const [notice, setNotice] = useState("");
-  const [showHandled, setShowHandled] = useState(false);
+  const [waitingOnly, setWaitingOnly] = useState(false);
 
   const loading = live.loading && backup.loading;
   const error = live.error && backup.error ? live.error : "";
@@ -54,9 +54,10 @@ export default function AdminPaymentsPage() {
     .filter((p) => statusOf(p).toLowerCase() === "approved")
     .reduce((sum, p) => sum + (p.amount || 0), 0);
 
-  // A request leaves the queue once it has been approved or failed.
+  // Approved and failed requests stay in the list with their status; the toggle
+  // just narrows it to the ones still waiting.
   const waiting = rows.filter((p) => statusOf(p).toLowerCase() === "pending");
-  const shown = showHandled ? rows : waiting;
+  const shown = waitingOnly ? waiting : rows;
 
   async function mark(p: Row, next: "Approved" | "Rejected") {
     if (next === "Rejected") {
@@ -133,14 +134,14 @@ export default function AdminPaymentsPage() {
       ) : null}
 
       <Panel
-        title={"Payment requests (" + waiting.length + " waiting)"}
+        title={"Payment requests (" + rows.length + " total · " + waiting.length + " waiting)"}
         action={
           <button
             type="button"
-            onClick={() => setShowHandled((v) => !v)}
+            onClick={() => setWaitingOnly((v) => !v)}
             className="btn-ghost px-4 py-2 text-sm"
           >
-            {showHandled ? "Show waiting only" : "Show handled too"}
+            {waitingOnly ? "Show all requests" : "Show waiting only"}
           </button>
         }
       >
@@ -157,7 +158,7 @@ export default function AdminPaymentsPage() {
               text={
                 rows.length === 0
                   ? "No payment requests yet. They appear here as soon as a student submits one from the checkout page."
-                  : "Nothing waiting. Use “Show handled too” to see approved and failed requests."
+                  : "Nothing waiting right now. Approve or fail a request to clear the queue."
               }
             />
           ) : (
@@ -204,7 +205,7 @@ export default function AdminPaymentsPage() {
         </TableShell>
         <p className="border-t border-slate-100 px-5 py-3 text-xs text-slate-500">
           Approving confirms the payment and adds the course to the student's My courses;
-          failing marks it as not received. Either way the request leaves the queue.
+          failing marks it as not received. Both stay listed here with their status.
         </p>
       </Panel>
     </>

@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { ref, remove as rtdbRemove } from "firebase/database";
+import { rtdb } from "@/lib/firebase";
 import { Panel, TableShell, EmptyRow, StatusPill } from "@/components/admin/ui";
 import { useCollection } from "@/lib/useCollection";
 import { useRtdbList } from "@/lib/useRtdb";
@@ -16,16 +18,51 @@ export default function AdminUsersPage() {
   const error = live.error && backup.error ? live.error : "";
 
   const seen = new Set<string>();
-  const rows: AdminUser[] = [];
+  const all: AdminUser[] = [];
   for (const list of [live.rows, backup.rows]) {
     for (const u of list) {
       const key = u.email || u.id;
       if (seen.has(key)) continue;
       seen.add(key);
-      rows.push(u);
+      all.push(u);
+    }
+  }
+
+  const rows = all.filter((u) => !removed.includes(u.id));
+
+  async function removeUser(u: AdminUser) {
+    if (!rtdb) {
+      setNotice("Realtime Database is not configured, so users cannot be removed.");
+      return;
+    }
+    const ok = window.confirm(
+      "Delete " +
+        (u.name || u.email || "this user") +
+        " from the database? Their profile and purchased courses are removed. The sign-in account itself has to be deleted in the Firebase console."
+    );
+    if (!ok) return;
+
+    setBusyId(u.id);
+    setNotice("");
+    try {
+      await rtdbRemove(ref(rtdb, "users/" + u.id));
+      try {
+        await rtdbRemove(ref(rtdb, "enrollments/" + u.id));
+      } catch {
+        // nothing enrolled - fine
+      }
+      setRemoved((r) => [...r, u.id]);
+      setNotice("User removed from the database.");
+    } catch {
+      setNotice("Could not remove this user. Check that database.rules.json is published.");
+    } finally {
+      setBusyId(null);
     }
   }
   const [query, setQuery] = useState("");
+  const [removed, setRemoved] = useState<string[]>([]);
+  const [busyId, setBusyId] = useState<string | null>(null);
+  const [notice, setNotice] = useState("");
 
   const stamp = (value: DateLike) =>
     typeof value === "number" ? value : (value?.toDate?.()?.getTime() ?? 0);
@@ -61,6 +98,10 @@ export default function AdminUsersPage() {
         </p>
       ) : null}
 
+      {notice ? (
+        <p className="mt-4 rounded-md bg-slate-50 px-4 py-3 text-sm text-slate-700">{notice}</p>
+      ) : null}
+
       <Panel
         title={"All registered users (" + rows.length + ")"}
         action={
@@ -73,14 +114,14 @@ export default function AdminUsersPage() {
           />
         }
       >
-        <TableShell headers={["User", "Email", "Phone", "Role", "Status", "Joined"]}>
+        <TableShell headers={["User", "Email", "Phone", "Role", "Status", "Joined", ""]}>
           {loading ? (
-            <EmptyRow colSpan={6} text="Loading users..." />
+            <EmptyRow colSpan={7} text="Loading users..." />
           ) : error ? (
-            <EmptyRow colSpan={6} text={error} />
+            <EmptyRow colSpan={7} text={error} />
           ) : shown.length === 0 ? (
             <EmptyRow
-              colSpan={6}
+              colSpan={7}
               text={
                 rows.length === 0
                   ? "No registered users yet. New sign-ups appear here, or use “Add user”."
@@ -113,6 +154,16 @@ export default function AdminUsersPage() {
                   <StatusPill status={u.status || "Active"} />
                 </td>
                 <td className="px-5 py-3 text-slate-600">{formatDate(u.createdAt)}</td>
+                <td className="px-5 py-3">
+                  <button
+                    type="button"
+                    onClick={() => removeUser(u)}
+                    disabled={busyId === u.id}
+                    className="rounded-md border border-red-200 px-3 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50 disabled:opacity-60"
+                  >
+                    {busyId === u.id ? "Deleting..." : "Delete"}
+                  </button>
+                </td>
               </tr>
             ))
           )}
